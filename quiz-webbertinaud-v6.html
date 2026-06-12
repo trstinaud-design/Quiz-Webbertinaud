@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Intelligent – By Webbertinaud</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#f0b429">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Quiz Webbertinaud">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+
+:root{
+  --bg:#06090f;--surface:#0d1420;--card:#111d2e;--card2:#162034;
+  --border:#1c2e45;--border2:#243650;--gold:#f0b429;--gold2:#ffd97d;
+  --green:#10b981;--green-bg:#03150e;--red:#f43f5e;--red-bg:#180610;
+  --blue:#38bdf8;--blue-dim:#0c2030;--purple:#a78bfa;--purple-dim:#140d24;
+  --text:#ddeeff;--muted:#4a6a8a;--muted2:#2a4560;--r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lexend Deca',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0 0 80px;background-image:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(240,180,41,0.08) 0%,transparent 70%),radial-gradient(ellipse 60% 30% at 90% 80%,rgba(56,189,248,0.05) 0%,transparent 70%);}
+.hdr{width:100%;background:rgba(13,20,32,0.95);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;backdrop-filter:blur(16px);}
+.hdr-logo .name{font-size:1.1rem;font-weight:900;color:var(--gold);}
+.hdr-logo .sub{font-size:0.68rem;color:var(--muted);margin-top:1px;}
+.hdr-flags{font-size:1.5rem;}
+.hero{text-align:center;padding:36px 20px 28px;max-width:580px;width:100%;}
+.hero-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(240,180,41,0.08);border:1px solid rgba(240,180,41,0.2);border-radius:99px;padding:5px 16px;font-size:0.72rem;font-weight:700;color:var(--gold);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:16px;}
+.hero h1{font-family:'Instrument Serif',serif;font-size:clamp(1.8rem,5vw,2.8rem);line-height:1.15;margin-bottom:8px;}
+.hero h1 em{color:var(--gold);font-style:italic;}
+.hero p{font-size:0.84rem;color:var(--muted);}
+.tabs-wrap{width:100%;max-width:580px;padding:0 16px;margin-bottom:20px;}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px;gap:3px;}
+.tab{padding:9px 5px;border:none;border-radius:9px;font-family:'Lexend Deca',sans-serif;font-size:0.7rem;font-weight:700;color:var(--muted);background:transparent;cursor:pointer;transition:all 0.2s;text-align:center;line-height:1.3;}
+.tab.on{background:var(--gold);color:#1a0e00;}
+.content{width:100%;max-width:620px;padding:0 16px 40px;}
+.panel{display:none;}.panel.on{display:block;}
+.sec-label{font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;}
+.sec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.sec-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 13px;cursor:pointer;transition:all 0.18s;}
+.sec-card:hover,.sec-card.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold);background:rgba(240,180,41,0.05);}
+.sc-icon{font-size:1.5rem;margin-bottom:5px;}
+.sc-name{font-size:0.82rem;font-weight:800;color:var(--text);}
+.sc-count{font-size:0.68rem;color:var(--muted);margin-top:2px;}
+.go-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a0e00;border:none;border-radius:12px;font-family:'Lexend Deca',sans-serif;font-size:0.97rem;font-weight:900;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.go-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(240,180,41,0.3);}
+.go-btn:disabled{opacity:0.4;cursor:default;transform:none;}
+.prog-area{margin-bottom:12px;}
+.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:0.78rem;color:var(--muted);}
+.score-pill{background:var(--card);border:1px solid var(--border);border-radius:99px;padding:3px 12px;font-weight:800;color:var(--gold);font-size:0.8rem;}
+.prog-bar-wrap{background:var(--surface);border-radius:99px;height:5px;overflow:hidden;}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:99px;transition:width 0.5s ease;}
+.q-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:20px 18px;margin-bottom:11px;}
+.q-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px;}
+.bdg{font-size:0.63rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;padding:3px 9px;border-radius:99px;}
+.bdg-v{background:rgba(56,189,248,0.1);color:var(--blue);}
+.bdg-t{background:rgba(240,180,41,0.1);color:var(--gold);}
+.bdg-p{background:rgba(16,185,129,0.1);color:var(--green);}
+.bdg-m{background:rgba(167,139,250,0.1);color:var(--purple);}
+.q-hint{font-size:0.74rem;color:var(--muted);font-style:italic;margin-bottom:9px;}
+.q-txt{font-size:clamp(0.95rem,2.5vw,1.1rem);font-weight:600;line-height:1.8;color:var(--text);}
+.adv{background:rgba(56,189,248,0.13);color:#7dd3fc;border-radius:5px;padding:1px 6px;font-weight:800;}
+.vinf{color:var(--gold2);font-style:italic;}
+.inp-row{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap;align-items:center;}
+.ans-inp{flex:1;min-width:130px;background:var(--card2);border:1.5px solid var(--border2);border-radius:10px;padding:10px 13px;font-size:0.93rem;font-family:'Lexend Deca',sans-serif;font-weight:600;color:var(--text);outline:none;transition:border-color 0.2s;}
+.ans-inp:focus{border-color:var(--gold);}
+.ans-inp.ok{border-color:var(--green);background:var(--green-bg);color:#34d399;}
+.ans-inp.no{border-color:var(--red);background:var(--red-bg);color:#fb7185;}
+.mic-btn{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--blue);background:var(--blue-dim);color:var(--blue);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+.mic-btn:hover{transform:scale(1.08);}
+.mic-btn.lst{border-color:var(--red);color:var(--red);background:var(--red-bg);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.val-btn{padding:10px 16px;background:var(--gold);color:#1a0e00;border:none;border-radius:10px;font-size:0.86rem;font-family:'Lexend Deca',sans-serif;font-weight:900;cursor:pointer;transition:all 0.18s;white-space:nowrap;}
+.val-btn:hover{background:var(--gold2);}
+.val-btn:disabled{opacity:0.4;cursor:default;}
+.mic-st{font-size:0.7rem;color:var(--muted);margin-top:5px;font-style:italic;min-height:14px;}
+.mic-st.act{color:var(--blue);}.mic-st.err{color:var(--red);}
+.opts{display:flex;flex-direction:column;gap:7px;margin-top:11px;}
+.opt{background:var(--card2);border:1.5px solid var(--border2);border-radius:10px;padding:10px 14px;font-size:0.88rem;font-family:'Lexend Deca',sans-serif;font-weight:600;color:var(--text);cursor:pointer;text-align:left;transition:all 0.15s;}
+.opt:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+.opt.ok{background:var(--green-bg);border-color:var(--green);color:#34d399;}
+.opt.no{background:var(--red-bg);border-color:var(--red);color:#fb7185;}
+.opt:disabled{cursor:default;}
+.corr{display:none;border-radius:var(--r);overflow:hidden;margin-bottom:11px;border:1.5px solid var(--border);}
+.corr.on{display:block;}
+.corr-hd{padding:10px 16px;font-size:0.9rem;font-weight:800;display:flex;align-items:center;gap:8px;}
+.corr-hd.ok{background:var(--green-bg);color:#34d399;border-bottom:1px solid #0a2818;}
+.corr-hd.no{background:var(--red-bg);color:#fb7185;border-bottom:1px solid #2a0810;}
+.corr-bd{background:var(--card);padding:13px 16px;}
+.corr-ans{font-size:0.82rem;margin-bottom:8px;color:var(--muted);}
+.corr-full{font-size:0.98rem;font-weight:700;color:var(--gold2);margin-bottom:8px;line-height:1.5;}
+.corr-expl{font-size:0.76rem;color:var(--muted);font-style:italic;margin-bottom:11px;padding:7px 11px;background:var(--card2);border-radius:8px;border-left:3px solid var(--gold);}
+.gloss{background:var(--card2);border-radius:10px;padding:10px 12px;border-left:3px solid var(--purple);}
+.gloss-t{font-size:0.63rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--purple);margin-bottom:7px;}
+.gtbl{width:100%;border-collapse:collapse;}
+.gtbl td{padding:3px 5px;font-size:0.78rem;vertical-align:top;}
+.gfr{font-weight:700;color:var(--text);width:32%;}
+.gtp{color:var(--muted);font-size:0.69rem;width:26%;padding-top:4px;font-style:italic;}
+.gmg{color:var(--purple);font-weight:700;width:42%;}
+.gtbl tr{border-bottom:1px solid rgba(255,255,255,0.04);}
+.gtbl tr:last-child{border-bottom:none;}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.back-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:9px 15px;font-size:0.81rem;font-family:'Lexend Deca',sans-serif;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.back-btn:hover{color:var(--text);border-color:var(--muted);}
+.nxt-btn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:0.88rem;font-family:'Lexend Deca',sans-serif;font-weight:800;cursor:pointer;transition:all 0.18s;display:none;margin-left:auto;}
+.nxt-btn:hover{background:#059669;}
+.res-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:28px 20px;text-align:center;margin-bottom:13px;}
+.res-big{font-family:'Instrument Serif',serif;font-size:3.8rem;line-height:1;}
+.res-big.gr{color:var(--green)}.res-big.ok{color:var(--gold)}.res-big.lw{color:var(--red)}
+.res-msg{font-size:1.05rem;font-weight:800;margin:9px 0 5px;}
+.res-sub{font-size:0.83rem;color:var(--muted);}
+.rev-list{text-align:left;margin-top:16px;}
+.rv{border-radius:10px;padding:8px 12px;margin-bottom:6px;font-size:0.78rem;border-left:3px solid;}
+.rv.ok{background:var(--green-bg);border-color:var(--green);}
+.rv.no{background:var(--red-bg);border-color:var(--red);}
+.rv .rq{font-weight:700;color:var(--text);margin-bottom:2px;}
+.rv .ra{color:var(--muted);}
+.ra .ri{color:#34d399;font-weight:700;}.ra .rw{color:#fb7185;}
+.rst-btn{width:100%;padding:12px;background:var(--gold);color:#1a0e00;border:none;border-radius:var(--r);font-size:0.97rem;font-family:'Lexend Deca',sans-serif;font-weight:900;cursor:pointer;transition:all 0.2s;}
+.rst-btn:hover{background:var(--gold2);}
+.dir-row{display:flex;gap:8px;margin-bottom:13px;}
+.dir-btn{flex:1;padding:9px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-family:'Lexend Deca',sans-serif;font-weight:700;font-size:0.8rem;cursor:pointer;transition:all 0.15s;text-align:center;}
+.dir-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(240,180,41,0.07);}
+.txt-body{font-size:0.95rem;font-weight:500;line-height:2.6;color:var(--text);}
+.blank-inp{display:inline-block;border:none;border-bottom:2px solid var(--gold);background:transparent;color:var(--gold);font-family:'Lexend Deca',sans-serif;font-size:0.9rem;font-weight:700;outline:none;padding:0 4px;min-width:88px;text-align:center;transition:border-color 0.2s;}
+.blank-inp:focus{border-color:var(--gold2);}
+.blank-inp.ok{border-color:var(--green);color:#34d399;}
+.blank-inp.no{border-color:var(--red);color:#fb7185;}
+.vinf-hint{font-size:0.75rem;color:var(--muted);font-style:italic;}
+.chk-btn{width:100%;padding:12px;margin-top:14px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a0e00;border:none;border-radius:12px;font-family:'Lexend Deca',sans-serif;font-size:0.95rem;font-weight:900;cursor:pointer;transition:all 0.2s;}
+.chk-btn:hover{transform:translateY(-1px);}
+.chk-btn:disabled{opacity:0.4;cursor:default;transform:none;}
+.txt-res{border-radius:12px;padding:13px 15px;margin-top:11px;display:none;font-size:0.83rem;}
+.txt-res.on{display:block;}
+.txt-res.ok{background:var(--green-bg);border:1px solid var(--green);color:#34d399;}
+.txt-res.mix{background:rgba(240,180,41,0.06);border:1px solid var(--gold);color:var(--gold2);}
+.cl{margin-bottom:4px;font-size:0.78rem;}
+.cl .wr{color:#fb7185;}.cl .ri{color:#34d399;}
+@media(max-width:480px){.sec-grid{grid-template-columns:1fr;}.tabs{grid-template-columns:repeat(2,1fr);}}
+
+
+/* MODE SELECTOR */
+.mode-toggle { display:flex; gap:8px; margin-bottom:14px; }
+.mode-btn { flex:1; padding:11px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); color:var(--muted); font-family:'Lexend Deca',sans-serif; font-weight:700; font-size:0.82rem; cursor:pointer; transition:all 0.15s; text-align:center; }
+.mode-btn.on { border-color:var(--gold); color:var(--gold); background:rgba(240,180,41,0.07); }
+
+/* PROGRESS GLOBAL */
+.global-score { position:fixed; top:60px; right:12px; background:var(--card); border:1px solid var(--border); border-radius:99px; padding:5px 14px; font-size:0.78rem; font-weight:800; color:var(--gold); z-index:150; display:flex; align-items:center; gap:5px; box-shadow:0 4px 12px rgba(0,0,0,0.3); }
+.global-score .gs-icon { font-size:1rem; }
+
+/* ARTICLES & NEGATION BADGES */
+.bdg-art { background:rgba(251,191,36,0.12); color:#fbbf24; }
+.bdg-neg { background:rgba(244,63,94,0.12); color:var(--red); }
+.bdg-fp  { background:rgba(16,185,129,0.12); color:var(--green); }
+
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-logo">
+    <div class="name">Quiz Intelligent 🇫🇷</div>
+    <div class="sub">✏️ By Mr Tsiaraso Webbertinaud</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+  <button id="install-btn" style="display:none;background:var(--gold);color:#1a0e00;border:none;border-radius:8px;padding:6px 12px;font-family:Lexend Deca,sans-serif;font-size:0.72rem;font-weight:800;cursor:pointer;" onclick="installApp()">📲 Installer</button>
+  <div class="hdr-flags">🇫🇷 🇲🇬</div>
+</div>
+</div>
+
+<div class="global-score">
+  <span class="gs-icon">🏆</span>
+  <span id="global-score-val">0</span> pts
+</div>
+
+<div class="hero">
+  <div class="hero-pill">✨ Niveau A2 · Élève : Brave</div>
+  <h1>Apprends le <em>Français</em><br>à ton rythme</h1>
+  <p>+200 questions · 295 mots · Articles · Négation · Futur proche</p>
+</div>
+
+<div class="tabs-wrap">
+  <div class="tabs" style="grid-template-columns:repeat(3,1fr);">
+    <button class="tab on" onclick="showTab('t-conjug')">📝 Conjugaison</button>
+    <button class="tab" onclick="showTab('t-vocab')">🌍 Vocabulaire</button>
+    <button class="tab" onclick="showTab('t-gram')">📐 Grammaire</button>
+  </div>
+  <div class="tabs" style="grid-template-columns:repeat(2,1fr);margin-top:6px;">
+    <button class="tab" onclick="showTab('t-mixte')">🎯 Mélangé</button>
+    <button class="tab" onclick="showTab('t-texte')">📖 Textes</button>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══ CONJUGAISON ═══ -->
+<div class="panel on" id="t-conjug">
+  <div id="cj-menu">
+    <div class="sec-label">Mode de réponse :</div>
+    <div class="mode-toggle">
+      <button class="mode-btn on" id="cj-mode-write" onclick="setCJMode('write')">✏️ Écrire la réponse</button>
+      <button class="mode-btn" id="cj-mode-qcm" onclick="setCJMode('qcm')">🔘 4 choix à cliquer</button>
+    </div>
+    <div class="sec-label">Choisir une section :</div>
+    <div class="sec-grid" id="cj-grid"></div>
+    <button class="go-btn" onclick="startCJ()">▶ Commencer</button>
+  </div>
+  <div id="cj-quiz" style="display:none">
+    <div class="prog-area">
+      <div class="prog-top"><span id="cj-ct">1/10</span><div class="score-pill">⭐ <span id="cj-sc">0</span></div></div>
+      <div class="prog-bar-wrap"><div class="prog-bar" id="cj-pb" style="width:0%"></div></div>
+    </div>
+    <div class="q-card">
+      <div class="q-badges"><span class="bdg bdg-v" id="cj-vb"></span><span class="bdg bdg-t" id="cj-tb"></span><span class="bdg bdg-p" id="cj-pp" style="display:none">👤 Brave</span></div>
+      <div class="q-hint">💡 Le mot en bleu t'indique le bon temps !</div>
+      <div class="q-txt" id="cj-txt"></div>
+      <div id="cj-write-zone">
+        <div class="inp-row">
+          <input class="ans-inp" id="cj-inp" type="text" placeholder="Ta réponse..." autocomplete="off" spellcheck="false">
+          <button class="mic-btn" id="cj-mic" onclick="startMic()" title="Répondre à l'oral">🎤</button>
+          <button class="val-btn" id="cj-val" onclick="checkCJ()">Valider</button>
+        </div>
+        <div class="mic-st" id="cj-mst"></div>
+      </div>
+      <div class="opts" id="cj-qcm-zone" style="display:none"></div>
+    </div>
+    <div class="corr" id="cj-corr">
+      <div class="corr-hd" id="cj-ch"></div>
+      <div class="corr-bd">
+        <div class="corr-ans" id="cj-ca"></div>
+        <div class="corr-full" id="cj-cf"></div>
+        <div class="corr-expl" id="cj-ce"></div>
+        <div class="gloss"><div class="gloss-t">📖 Vocabulaire en Malagasy</div><table class="gtbl" id="cj-gl"></table></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="back-btn" onclick="resetCJ()">← Sections</button>
+      <button class="nxt-btn" id="cj-nxt" onclick="nextCJ()">Suivant →</button>
+    </div>
+  </div>
+  <div class="res-card" id="cj-res" style="display:none">
+    <div class="res-big" id="cj-rb"></div><div class="res-msg" id="cj-rm"></div><div class="res-sub" id="cj-rs"></div>
+    <div class="rev-list" id="cj-rv"></div><br>
+    <button class="rst-btn" onclick="resetCJ()">🔄 Autre section</button>
+  </div>
+</div>
+
+<!-- ═══ VOCABULAIRE ═══ -->
+<div class="panel" id="t-vocab">
+  <div id="vc-menu">
+    <div class="sec-label">Choisir une catégorie :</div>
+    <div class="sec-grid" id="vc-cat-grid"></div>
+    <div id="vc-sub-menu" style="display:none;margin-top:14px;">
+      <div class="sec-label" id="vc-sub-label">Choisir une section :</div>
+      <div class="sec-grid" id="vc-sub-grid"></div>
+      <div class="sec-label" style="margin-top:12px;">Direction :</div>
+      <div class="dir-row">
+        <button class="dir-btn on" id="dir-fr" onclick="setDir('fr-mg')">🇫🇷 → 🇲🇬 Français</button>
+        <button class="dir-btn" id="dir-mg" onclick="setDir('mg-fr')">🇲🇬 → 🇫🇷 Malagasy</button>
+      </div>
+      <button class="go-btn" style="margin-top:10px;" onclick="startVC()">▶ Commencer</button>
+    </div>
+  </div>
+  <div id="vc-quiz" style="display:none">
+    <div class="prog-area">
+      <div class="prog-top"><span id="vc-ct">1/10</span><div class="score-pill">⭐ <span id="vc-sc">0</span></div></div>
+      <div class="prog-bar-wrap"><div class="prog-bar" id="vc-pb" style="width:0%"></div></div>
+    </div>
+    <div class="q-card">
+      <div class="q-badges"><span class="bdg bdg-m" id="vc-bdg"></span></div>
+      <div class="q-hint" id="vc-hint"></div>
+      <div class="q-txt" id="vc-word" style="font-size:1.4rem;color:var(--gold);font-weight:800;margin-bottom:5px;"></div>
+      <div class="opts" id="vc-opts"></div>
+    </div>
+    <div class="corr" id="vc-corr">
+      <div class="corr-hd" id="vc-ch"></div>
+      <div class="corr-bd">
+        <div class="corr-ans" id="vc-ca"></div>
+        <div class="gloss" style="margin-top:0"><div class="gloss-t">📖 À retenir</div><table class="gtbl" id="vc-gl"></table></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="back-btn" onclick="resetVC()">← Catégories</button>
+      <button class="nxt-btn" id="vc-nxt" onclick="nextVC()">Suivant →</button>
+    </div>
+  </div>
+  <div class="res-card" id="vc-res" style="display:none">
+    <div class="res-big" id="vc-rb"></div><div class="res-msg" id="vc-rm"></div><div class="res-sub" id="vc-rs"></div>
+    <div class="rev-list" id="vc-rv"></div><br>
+    <button class="rst-btn" onclick="resetVC()">🔄 Autre catégorie</button>
+  </div>
+</div>
+
+<!-- ═══ GRAMMAIRE ═══ -->
+<div class="panel" id="t-gram">
+  <div id="gm-menu">
+    <div class="sec-label">Choisir une catégorie :</div>
+    <div class="sec-grid" id="gm-grid"></div>
+    <button class="go-btn" onclick="startGM()">▶ Commencer</button>
+  </div>
+  <div id="gm-quiz" style="display:none">
+    <div class="prog-area">
+      <div class="prog-top"><span id="gm-ct">1/10</span><div class="score-pill">⭐ <span id="gm-sc">0</span></div></div>
+      <div class="prog-bar-wrap"><div class="prog-bar" id="gm-pb" style="width:0%"></div></div>
+    </div>
+    <div class="q-card">
+      <div class="q-badges"><span class="bdg" id="gm-tb"></span></div>
+      <div class="q-hint">💡 Choisis la bonne réponse !</div>
+      <div class="q-txt" id="gm-txt"></div>
+      <div class="opts" id="gm-opts"></div>
+    </div>
+    <div class="corr" id="gm-corr">
+      <div class="corr-hd" id="gm-ch"></div>
+      <div class="corr-bd">
+        <div class="corr-ans" id="gm-ca"></div>
+        <div class="corr-expl" id="gm-ce"></div>
+        <div class="gloss"><div class="gloss-t">📖 Vocabulaire en Malagasy</div><table class="gtbl" id="gm-gl"></table></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="back-btn" onclick="resetGM()">← Menu</button>
+      <button class="nxt-btn" id="gm-nxt" onclick="nextGM()">Suivant →</button>
+    </div>
+  </div>
+  <div class="res-card" id="gm-res" style="display:none">
+    <div class="res-big" id="gm-rb"></div><div class="res-msg" id="gm-rm"></div><div class="res-sub" id="gm-rs"></div>
+    <div class="rev-list" id="gm-rv"></div><br>
+    <button class="rst-btn" onclick="resetGM()">🔄 Recommencer</button>
+  </div>
+</div>
+
+<!-- ═══ MÉLANGÉ ═══ -->
+<div class="panel" id="t-mixte">
+  <div id="mx-menu">
+    <div class="sec-label">Mode :</div>
+    <div class="sec-grid" id="mx-grid"></div>
+    <button class="go-btn" onclick="startMX()">▶ Commencer</button>
+  </div>
+  <div id="mx-quiz" style="display:none">
+    <div class="prog-area">
+      <div class="prog-top"><span id="mx-ct">1/10</span><div class="score-pill">⭐ <span id="mx-sc">0</span></div></div>
+      <div class="prog-bar-wrap"><div class="prog-bar" id="mx-pb" style="width:0%"></div></div>
+    </div>
+    <div class="q-card">
+      <div class="q-badges"><span class="bdg bdg-v" id="mx-vb"></span><span class="bdg bdg-p" id="mx-pp" style="display:none">👤 Brave</span></div>
+      <div class="q-hint">💡 Regarde bien le mot en bleu et devine le bon temps tout seul !</div>
+      <div class="q-txt" id="mx-txt"></div>
+      <div class="inp-row">
+        <input class="ans-inp" id="mx-inp" type="text" placeholder="Ta réponse..." autocomplete="off" spellcheck="false">
+        <button class="val-btn" id="mx-val" onclick="checkMX()">Valider</button>
+      </div>
+    </div>
+    <div class="corr" id="mx-corr">
+      <div class="corr-hd" id="mx-ch"></div>
+      <div class="corr-bd">
+        <div class="corr-ans" id="mx-ca"></div>
+        <div class="corr-full" id="mx-cf"></div>
+        <div class="corr-expl" id="mx-ce"></div>
+        <div class="gloss"><div class="gloss-t">📖 Vocabulaire en Malagasy</div><table class="gtbl" id="mx-gl"></table></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="back-btn" onclick="resetMX()">← Menu</button>
+      <button class="nxt-btn" id="mx-nxt" onclick="nextMX()">Suivant →</button>
+    </div>
+  </div>
+  <div class="res-card" id="mx-res" style="display:none">
+    <div class="res-big" id="mx-rb"></div><div class="res-msg" id="mx-rm"></div><div class="res-sub" id="mx-rs"></div>
+    <div class="rev-list" id="mx-rv"></div><br>
+    <button class="rst-btn" onclick="resetMX()">🔄 Recommencer</button>
+  </div>
+</div>
+
+<!-- ═══ TEXTES ═══ -->
+<div class="panel" id="t-texte">
+  <div id="tx-menu">
+    <div class="sec-label">Choisir une catégorie :</div>
+    <div class="sec-grid" id="tx-cat-grid"></div>
+    <div id="tx-sub-menu" style="display:none;margin-top:14px;">
+      <div class="sec-label" id="tx-sub-label">Choisir un texte :</div>
+      <div class="sec-grid" id="tx-sub-grid"></div>
+      <button class="go-btn" style="margin-top:10px;" onclick="startTX()">▶ Commencer ce texte</button>
+    </div>
+  </div>
+  <div id="tx-quiz" style="display:none;margin-top:4px;">
+    <div class="q-card">
+      <div class="q-hint" id="tx-intro" style="font-size:0.85rem;color:var(--gold2);margin-bottom:14px;font-style:normal;font-weight:700;"></div>
+      <div class="txt-body" id="tx-body"></div>
+    </div>
+    <button class="chk-btn" id="tx-chk" onclick="checkTX()">✅ Corriger mes réponses</button>
+    <div class="txt-res" id="tx-res"></div>
+    <div class="nav" style="margin-top:12px;">
+      <button class="back-btn" onclick="resetTX()">← Textes</button>
+      <button class="nxt-btn" id="tx-nxt" onclick="resetTX()" style="display:block;">📖 Autre texte</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+const CJ_SECTIONS = [
+{key:'p1',name:'Présent',sub:'Section 1 · 10 questions',icon:'☀️',questions:[
+  {verb:'réparer',tense:'Présent',adv:'en ce moment',sentence:'en ce moment, le mécanicien ___ (réparer) la moto dans le garage.',answer:'répare',full:'En ce moment, le mécanicien répare la moto dans le garage.',expl:'« En ce moment » = action en cours → Présent. Il + réparer → répare.',perso:true,gloss:[{fr:'réparer',type:'verbe',mg:'manamboatra'},{fr:'en ce moment',type:'adv.',mg:'amin\'izao fotoana izao'},{fr:'mécanicien',type:'nom',mg:'mekanika'},{fr:'garage',type:'nom',mg:'atelier / garage'}]},
+  {verb:'chercher',tense:'Présent',adv:'actuellement',sentence:'actuellement, les vendeurs ___ (chercher) des pièces de rechange.',answer:'cherchent',full:'Actuellement, les vendeurs cherchent des pièces de rechange.',expl:'« Actuellement » → Présent. Ils + chercher → cherchent (attention au -ent pluriel).',perso:true,gloss:[{fr:'chercher',type:'verbe',mg:'mitady'},{fr:'actuellement',type:'adv.',mg:'amin\'izao fotoana izao'},{fr:'pièces de rechange',type:'nom',mg:'piesa'}]},
+  {verb:'finir',tense:'Présent',adv:'bientôt',sentence:'bientôt, tu ___ (finir) ton travail avant la fin de la journée.',answer:'finis',full:'Bientôt, tu finis ton travail avant la fin de la journée.',expl:'Présent. Tu + finir (2e gr.) → finis. Les verbes -IR en 2e groupe prennent -s avec tu.',gloss:[{fr:'finir',type:'verbe',mg:'mamarana / mahavita'},{fr:'bientôt',type:'adv.',mg:'tsy ho ela'},{fr:'journée',type:'nom',mg:'antoandro / andro iray'}]},
+  {verb:'bondir',tense:'Présent',adv:'soudain',sentence:'soudain, le joueur ___ (bondir) de joie après avoir marqué.',answer:'bondit',full:'Soudain, le joueur bondit de joie après avoir marqué.',expl:'Présent. Il + bondir → bondit. Verbe -IR 2e groupe, prend -t avec il.',gloss:[{fr:'bondir',type:'verbe',mg:'mitsambikina'},{fr:'soudain',type:'adv.',mg:'tampoka'},{fr:'joie',type:'nom',mg:'hafaliana'},{fr:'marquer',type:'verbe',mg:'mahazo tsiny / mahazo goly'}]},
+  {verb:'prendre',tense:'Présent',adv:'aujourd\'hui',sentence:'aujourd\'hui, Brave ___ (prendre) une décision importante pour son magasin.',answer:'prend',full:'Aujourd\'hui, Brave prend une décision importante pour son magasin.',expl:'« Aujourd\'hui » → Présent. Il + prendre → prend (irrégulier, pas de -s).',perso:true,gloss:[{fr:'prendre',type:'verbe irr.',mg:'maka / mandray'},{fr:'aujourd\'hui',type:'adv.',mg:'androany'},{fr:'décision',type:'nom',mg:'fanapahan-kevitra'},{fr:'magasin',type:'nom',mg:'fivarotana'}]},
+  {verb:'descendre',tense:'Présent',adv:'maintenant',sentence:'maintenant, nous ___ (descendre) l\'escalier rapidement pour vous rejoindre.',answer:'descendons',full:'Maintenant, nous descendons l\'escalier rapidement pour vous rejoindre.',expl:'« Maintenant » → Présent. Nous + descendre → descendons.',gloss:[{fr:'descendre',type:'verbe',mg:'midina'},{fr:'maintenant',type:'adv.',mg:'ankehitriny / izao'},{fr:'escalier',type:'nom',mg:'tohatra'},{fr:'rejoindre',type:'verbe',mg:'miara-monina'}]},
+  {verb:'dire',tense:'Présent',adv:'toujours',sentence:'toujours, vous ___ (dire) la vérité à vos clients.',answer:'dites',full:'Toujours, vous dites la vérité à vos clients.',expl:'« Toujours » = habitude → Présent. Vous + dire → dites (attention : pas « disez »).',gloss:[{fr:'dire',type:'verbe irr.',mg:'miteny / milaza'},{fr:'toujours',type:'adv.',mg:'foana / mandrakariva'},{fr:'vérité',type:'nom',mg:'fahamarinana'},{fr:'clients',type:'nom',mg:'mpanjifa'}]},
+  {verb:'noircir',tense:'Présent',adv:'souvent',sentence:'souvent, le ciel ___ (noircir) avant l\'orage.',answer:'noircit',full:'Souvent, le ciel noircit avant l\'orage.',expl:'« Souvent » = habitude → Présent. Il + noircir → noircit (2e groupe).',gloss:[{fr:'noircir',type:'verbe',mg:'mihamaizina'},{fr:'souvent',type:'adv.',mg:'matetika'},{fr:'orage',type:'nom',mg:'kotrokorana'}]},
+  {verb:'se lever',tense:'Présent',adv:'chaque matin',sentence:'chaque matin, Brave ___ (se lever) de bonne heure pour ouvrir le magasin.',answer:'se lève',full:'Chaque matin, Brave se lève de bonne heure pour ouvrir le magasin.',expl:'« Chaque matin » = habitude → Présent pronominal. Il se lève.',perso:true,gloss:[{fr:'se lever',type:'verbe pron.',mg:'mitsangana / mifoha'},{fr:'chaque matin',type:'adv.',mg:'isan\'maraina'},{fr:'de bonne heure',type:'expr.',mg:'mialoha / haingana'}]},
+  {verb:'s\'amuser',tense:'Présent',adv:'en ce moment',sentence:'en ce moment, Jo et Aaron ___ (s\'amuser) dans la cour.',answer:'s\'amusent',full:'En ce moment, Jo et Aaron s\'amusent dans la cour.',expl:'« En ce moment » → Présent. Ils + s\'amuser → s\'amusent.',perso:true,gloss:[{fr:'s\'amuser',type:'verbe pron.',mg:'milalao / mifaly'},{fr:'cour',type:'nom',mg:'kianja'},{fr:'en ce moment',type:'adv.',mg:'amin\'izao fotoana izao'}]},
+]},
+{key:'p2',name:'Présent',sub:'Section 2 · 10 questions',icon:'🌤️',questions:[
+  {verb:'ranger',tense:'Présent',adv:'actuellement',sentence:'actuellement, Rabe ___ (ranger) les outils dans la boîte.',answer:'range',full:'Actuellement, Rabe range les outils dans la boîte.',expl:'« Actuellement » → Présent. Il + ranger → range.',perso:true,gloss:[{fr:'ranger',type:'verbe',mg:'mandamina'},{fr:'outils',type:'nom',mg:'fitaovana'},{fr:'boîte',type:'nom',mg:'boaty'}]},
+  {verb:'se laver',tense:'Présent',adv:'généralement',sentence:'généralement, les mécaniciens ___ (se laver) les mains après le travail.',answer:'se lavent',full:'Généralement, les mécaniciens se lavent les mains après le travail.',expl:'« Généralement » = habitude → Présent. Ils + se laver → se lavent.',gloss:[{fr:'généralement',type:'adv.',mg:'mazàna / amin\'ny ankabeazany'},{fr:'se laver',type:'verbe pron.',mg:'misasa'},{fr:'mains',type:'nom',mg:'tanana'}]},
+  {verb:'vérifier',tense:'Présent',adv:'aujourd\'hui',sentence:'aujourd\'hui, Brave ___ (vérifier) les freins de la moto.',answer:'vérifie',full:'Aujourd\'hui, Brave vérifie les freins de la moto.',expl:'« Aujourd\'hui » → Présent. Il + vérifier → vérifie.',perso:true,gloss:[{fr:'vérifier',type:'verbe',mg:'manamarina'},{fr:'freins',type:'nom',mg:'frein'},{fr:'moto',type:'nom',mg:'moto / motosyklety'}]},
+  {verb:'boire',tense:'Présent',adv:'maintenant',sentence:'maintenant, les clients ___ (boire) leur café calmement.',answer:'boivent',full:'Maintenant, les clients boivent leur café calmement.',expl:'« Maintenant » → Présent. Ils + boire → boivent (irrégulier).',gloss:[{fr:'boire',type:'verbe irr.',mg:'misotro'},{fr:'calmement',type:'adv.',mg:'amim-piadanana'},{fr:'café',type:'nom',mg:'kafe'}]},
+  {verb:'courir',tense:'Présent',adv:'tous les jours',sentence:'tous les jours, le joueur de foot ___ (courir) sur le terrain.',answer:'court',full:'Tous les jours, le joueur de foot court sur le terrain.',expl:'« Tous les jours » = habitude → Présent. Il + courir → court (irrégulier).',gloss:[{fr:'courir',type:'verbe irr.',mg:'mihazakazaka'},{fr:'tous les jours',type:'adv.',mg:'isan\'andro'},{fr:'terrain',type:'nom',mg:'kianja'}]},
+  {verb:'étudier',tense:'Présent',adv:'depuis un an',sentence:'depuis un an, Brave ___ (étudier) le français avec son professeur.',answer:'étudie',full:'Depuis un an, Brave étudie le français avec son professeur.',expl:'« Depuis » = action qui continue → Présent. Il + étudier → étudie.',perso:true,gloss:[{fr:'étudier',type:'verbe',mg:'mianatra'},{fr:'depuis un an',type:'adv.',mg:'hatramin\'ny iray taona lasa'},{fr:'professeur',type:'nom',mg:'mpampianatra'}]},
+  {verb:'gonfler',tense:'Présent',adv:'régulièrement',sentence:'régulièrement, tu ___ (gonfler) les pneus de ta moto.',answer:'gonfles',full:'Régulièrement, tu gonfles les pneus de ta moto.',expl:'« Régulièrement » = habitude → Présent. Tu + gonfler → gonfles.',perso:true,gloss:[{fr:'gonfler',type:'verbe',mg:'manasofoka rivotra'},{fr:'régulièrement',type:'adv.',mg:'amin\'ny fotoana'},{fr:'pneus',type:'nom',mg:'kodiarana'}]},
+  {verb:'se regarder',tense:'Présent',adv:'avant de sortir',sentence:'avant de sortir, Mama Jo ___ (se regarder) dans le miroir.',answer:'se regarde',full:'Avant de sortir, Mama Jo se regarde dans le miroir.',expl:'Présent pronominal. Elle se regarde.',perso:true,gloss:[{fr:'se regarder',type:'verbe pron.',mg:'mijery tena'},{fr:'miroir',type:'nom',mg:'fitaratra'},{fr:'avant de sortir',type:'expr.',mg:'alohan\'ny hivoaka'}]},
+  {verb:'produire',tense:'Présent',adv:'actuellement',sentence:'actuellement, cette vieille moto ___ (produire) une grande fumée noire.',answer:'produit',full:'Actuellement, cette vieille moto produit une grande fumée noire.',expl:'« Actuellement » → Présent. Elle + produire → produit (irrégulier).',gloss:[{fr:'produire',type:'verbe irr.',mg:'mamoaka'},{fr:'fumée',type:'nom',mg:'setroka'},{fr:'vieille',type:'adj.',mg:'antitra / efa ela'}]},
+  {verb:'s\'occuper',tense:'Présent',adv:'en ce moment',sentence:'en ce moment, Rabe ___ (s\'occuper) de tous les clients du magasin.',answer:'s\'occupe',full:'En ce moment, Rabe s\'occupe de tous les clients du magasin.',expl:'« En ce moment » → Présent. Il s\'occupe.',perso:true,gloss:[{fr:'s\'occuper de',type:'verbe pron.',mg:'mikarakara / misahana'},{fr:'en ce moment',type:'adv.',mg:'amin\'izao fotoana izao'},{fr:'tous',type:'adj.',mg:'rehetra / avokoa'}]},
+]},
+{key:'p3',name:'Présent',sub:'Section 3 · 10 questions',icon:'🌞',questions:[
+  {verb:'chanter',tense:'Présent',adv:'dès l\'aube',sentence:'dès l\'aube, les oiseaux ___ (chanter) dans le jardin.',answer:'chantent',full:'Dès l\'aube, les oiseaux chantent dans le jardin.',expl:'« Dès l\'aube » = habitude matinale → Présent.',gloss:[{fr:'chanter',type:'verbe',mg:'mihira'},{fr:'dès l\'aube',type:'adv.',mg:'hatramin\'ny fiposahan\'ny masoandro'},{fr:'oiseaux',type:'nom',mg:'vorona'},{fr:'jardin',type:'nom',mg:'zaridaina'}]},
+  {verb:'bouillir',tense:'Présent',adv:'toujours',sentence:'toujours, l\'eau ___ (bouillir) à 100 degrés Celsius.',answer:'bout',full:'Toujours, l\'eau bout à 100 degrés Celsius.',expl:'Vérité générale → Présent. Bouillir irrégulier : il bout.',gloss:[{fr:'bouillir',type:'verbe irr.',mg:'mangotraka'},{fr:'toujours',type:'adv.',mg:'foana / lalandava'},{fr:'degrés',type:'nom',mg:'degre'}]},
+  {verb:'entendre',tense:'Présent',adv:'de temps en temps',sentence:'de temps en temps, nous ___ (entendre) de belles chansons à la radio.',answer:'entendons',full:'De temps en temps, nous entendons de belles chansons à la radio.',expl:'« De temps en temps » = fréquence → Présent. Nous + entendons.',gloss:[{fr:'entendre',type:'verbe',mg:'mandre'},{fr:'de temps en temps',type:'adv.',mg:'indraindray'},{fr:'chansons',type:'nom',mg:'hira'}]},
+  {verb:'franchir',tense:'Présent',adv:'à cet instant',sentence:'à cet instant, le gardien ___ (franchir) la clôture du jardin.',answer:'franchit',full:'À cet instant, le gardien franchit la clôture du jardin.',expl:'« À cet instant » → Présent. Il + franchir → franchit.',gloss:[{fr:'franchir',type:'verbe',mg:'miampita / miakatra'},{fr:'à cet instant',type:'adv.',mg:'amin\'izao fotoana izao'},{fr:'gardien',type:'nom',mg:'mpiambina'},{fr:'clôture',type:'nom',mg:'fefy'}]},
+  {verb:'poser',tense:'Présent',adv:'constamment',sentence:'constamment, tu ___ (poser) des questions sur le fonctionnement du moteur.',answer:'poses',full:'Constamment, tu poses des questions sur le fonctionnement du moteur.',expl:'« Constamment » = répétition → Présent. Tu + poser → poses.',gloss:[{fr:'constamment',type:'adv.',mg:'hatrany / lalandava'},{fr:'poser une question',type:'expr.',mg:'mametraka fanontaniana'},{fr:'moteur',type:'nom',mg:'motera'}]},
+  {verb:'se préparer',tense:'Présent',adv:'chaque jour',sentence:'chaque jour, Brave ___ (se préparer) bien avant d\'aller au travail.',answer:'se prépare',full:'Chaque jour, Brave se prépare bien avant d\'aller au travail.',expl:'« Chaque jour » → Présent pronominal. Il se prépare.',perso:true,gloss:[{fr:'se préparer',type:'verbe pron.',mg:'miomana'},{fr:'chaque jour',type:'adv.',mg:'isan\'andro'},{fr:'bien',type:'adv.',mg:'tsara / ampy'}]},
+  {verb:'rougir',tense:'Présent',adv:'parfois',sentence:'parfois, Aaron ___ (rougir) quand il parle devant la classe.',answer:'rougit',full:'Parfois, Aaron rougit quand il parle devant la classe.',expl:'« Parfois » = habitude → Présent. Il + rougir → rougit.',perso:true,gloss:[{fr:'rougir',type:'verbe',mg:'mihodina mena / menatra'},{fr:'parfois',type:'adv.',mg:'indraindray'},{fr:'devant',type:'prép.',mg:'eo anoloan\'ny'},{fr:'classe',type:'nom',mg:'kilasy'}]},
+  {verb:'vendre',tense:'Présent',adv:'tous les jours',sentence:'tous les jours, Brave ___ (vendre) des pièces de moto dans son magasin.',answer:'vend',full:'Tous les jours, Brave vend des pièces de moto dans son magasin.',expl:'« Tous les jours » = habitude → Présent. Il + vendre → vend.',perso:true,gloss:[{fr:'vendre',type:'verbe',mg:'mivarotra'},{fr:'tous les jours',type:'adv.',mg:'isan\'andro'},{fr:'pièces de moto',type:'nom',mg:'piesa moto'}]},
+  {verb:'réfléchir',tense:'Présent',adv:'en ce moment',sentence:'en ce moment, Brave ___ (réfléchir) à une nouvelle façon d\'agrandir son magasin.',answer:'réfléchit',full:'En ce moment, Brave réfléchit à une nouvelle façon d\'agrandir son magasin.',expl:'« En ce moment » → Présent. Il + réfléchir → réfléchit.',perso:true,gloss:[{fr:'réfléchir',type:'verbe',mg:'misaina / manonona'},{fr:'agrandir',type:'verbe',mg:'hahalehibe'},{fr:'façon',type:'nom',mg:'fomba'}]},
+  {verb:'s\'habiller',tense:'Présent',adv:'chaque matin',sentence:'chaque matin, Jo ___ (s\'habiller) seul pour aller à l\'école.',answer:'s\'habille',full:'Chaque matin, Jo s\'habille seul pour aller à l\'école.',expl:'« Chaque matin » → Présent pronominal. Il s\'habille.',perso:true,gloss:[{fr:'s\'habiller',type:'verbe pron.',mg:'mitafy'},{fr:'seul',type:'adj.',mg:'irery'},{fr:'école',type:'nom',mg:'sekoly'}]},
+]},
+{key:'pc1',name:'Passé composé',sub:'Section 1 · 10 questions',icon:'📅',questions:[
+  {verb:'regarder',tense:'Passé composé',adv:'hier',sentence:'hier, nous ___ (regarder) un magnifique match de foot.',answer:'avons regardé',full:'Hier, nous avons regardé un magnifique match de foot.',expl:'« Hier » = passé terminé → Passé composé. Regarder + AVOIR → avons regardé.',gloss:[{fr:'hier',type:'adv.',mg:'omaly'},{fr:'regarder',type:'verbe',mg:'nijery'},{fr:'match de foot',type:'nom',mg:'lalao baolina kitra'},{fr:'magnifique',type:'adj.',mg:'tsara / mahafinaritra'}]},
+  {verb:'laver',tense:'Passé composé',adv:'la semaine dernière',sentence:'la semaine dernière, vous ___ (laver) la nouvelle voiture.',answer:'avez lavé',full:'La semaine dernière, vous avez lavé la nouvelle voiture.',expl:'« La semaine dernière » → Passé composé. Laver + AVOIR → avez lavé.',gloss:[{fr:'la semaine dernière',type:'adv.',mg:'ny herinandro lasa'},{fr:'laver',type:'verbe',mg:'nanasa'},{fr:'voiture',type:'nom',mg:'fiara'}]},
+  {verb:'choisir',tense:'Passé composé',adv:'l\'année dernière',sentence:'l\'année dernière, nous ___ (choisir) un nouveau modèle de moto.',answer:'avons choisi',full:'L\'année dernière, nous avons choisi un nouveau modèle de moto.',expl:'« L\'année dernière » → Passé composé. Choisir + AVOIR → avons choisi.',perso:true,gloss:[{fr:'l\'année dernière',type:'adv.',mg:'ny taona lasa'},{fr:'choisir',type:'verbe',mg:'nisafidy'},{fr:'modèle',type:'nom',mg:'modely'}]},
+  {verb:'bâtir',tense:'Passé composé',adv:'le mois dernier',sentence:'le mois dernier, les maçons ___ (bâtir) un grand garage.',answer:'ont bâti',full:'Le mois dernier, les maçons ont bâti un grand garage.',expl:'« Le mois dernier » → Passé composé. Bâtir + AVOIR → ont bâti.',gloss:[{fr:'le mois dernier',type:'adv.',mg:'ny volana lasa'},{fr:'bâtir',type:'verbe',mg:'manorina'},{fr:'maçons',type:'nom',mg:'mpanao trano'}]},
+  {verb:'boire',tense:'Passé composé',adv:'hier',sentence:'hier, les clients ___ (boire) beaucoup d\'eau pendant le voyage.',answer:'ont bu',full:'Hier, les clients ont bu beaucoup d\'eau pendant le voyage.',expl:'« Hier » → Passé composé. Boire + AVOIR → ont bu. Participe irrégulier : bu.',gloss:[{fr:'hier',type:'adv.',mg:'omaly'},{fr:'boire',type:'verbe irr.',mg:'nisotro'},{fr:'voyage',type:'nom',mg:'dia / safara'}]},
+  {verb:'écrire',tense:'Passé composé',adv:'hier soir',sentence:'hier soir, tu ___ (écrire) une longue lettre.',answer:'as écrit',full:'Hier soir, tu as écrit une longue lettre.',expl:'« Hier soir » → Passé composé. Écrire + AVOIR → as écrit. Participe : écrit.',gloss:[{fr:'hier soir',type:'adv.',mg:'omaly hariva'},{fr:'écrire',type:'verbe',mg:'nanoratra'},{fr:'lettre',type:'nom',mg:'taratasy'},{fr:'longue',type:'adj.',mg:'lava'}]},
+  {verb:'détruire',tense:'Passé composé',adv:'il y a deux jours',sentence:'il y a deux jours, le feu ___ (détruire) la vieille cabane en quelques minutes.',answer:'a détruit',full:'Il y a deux jours, le feu a détruit la vieille cabane en quelques minutes.',expl:'« Il y a deux jours » → Passé composé. Détruire + AVOIR → a détruit.',gloss:[{fr:'il y a deux jours',type:'adv.',mg:'roa andro lasa'},{fr:'détruire',type:'verbe irr.',mg:'mandrava / manimba'},{fr:'cabane',type:'nom',mg:'trano kely'},{fr:'feu',type:'nom',mg:'afo'}]},
+  {verb:'débattre',tense:'Passé composé',adv:'hier',sentence:'hier, ils ___ (débattre) calmement pendant la réunion.',answer:'ont débattu',full:'Hier, ils ont débattu calmement pendant la réunion.',expl:'« Hier » → Passé composé. Débattre + AVOIR → ont débattu.',gloss:[{fr:'hier',type:'adv.',mg:'omaly'},{fr:'débattre',type:'verbe',mg:'nifanakalo hevitra'},{fr:'réunion',type:'nom',mg:'fivoriana'}]},
+  {verb:'se baigner',tense:'Passé composé',adv:'pendant les vacances',sentence:'pendant les vacances, ils ___ (se baigner) tous les jours dans la mer.',answer:'se sont baignés',full:'Pendant les vacances, ils se sont baignés tous les jours dans la mer.',expl:'Passé composé pronominal + ÊTRE → se sont baignés. Accord -s au pluriel.',gloss:[{fr:'pendant les vacances',type:'adv.',mg:'nandritra ny ferie'},{fr:'se baigner',type:'verbe pron.',mg:'milomano / mandro'},{fr:'mer',type:'nom',mg:'ranomasina'}]},
+  {verb:'se lever',tense:'Passé composé',adv:'ce matin',sentence:'ce matin, Brave ___ (se lever) à 5h pour aller chercher des pièces au marché.',answer:'s\'est levé',full:'Ce matin, Brave s\'est levé à 5h pour aller chercher des pièces au marché.',expl:'« Ce matin » → Passé composé. Se lever + ÊTRE → s\'est levé.',perso:true,gloss:[{fr:'ce matin',type:'adv.',mg:'androany maraina'},{fr:'se lever',type:'verbe pron.',mg:'nitsangana / nifoha'},{fr:'marché',type:'nom',mg:'tsena'}]},
+]},
+{key:'pc2',name:'Passé composé',sub:'Section 2 · 10 questions',icon:'🌙',questions:[
+  {verb:'vendre',tense:'Passé composé',adv:'hier',sentence:'hier, les vendeurs ___ (vendre) toutes les pièces de rechange.',answer:'ont vendu',full:'Hier, les vendeurs ont vendu toutes les pièces de rechange.',expl:'« Hier » → Passé composé. Vendre + AVOIR → ont vendu.',perso:true,gloss:[{fr:'hier',type:'adv.',mg:'omaly'},{fr:'vendre',type:'verbe',mg:'nivarotra'},{fr:'toutes',type:'adj.',mg:'rehetra / avokoa'}]},
+  {verb:'descendre',tense:'Passé composé',adv:'la semaine passée',sentence:'la semaine passée, nous ___ (descendre) l\'escalier pour repeindre le mur.',answer:'avons descendu',full:'La semaine passée, nous avons descendu l\'escalier pour repeindre le mur.',expl:'« La semaine passée » → Passé composé. Descendre + AVOIR → avons descendu.',gloss:[{fr:'la semaine passée',type:'adv.',mg:'ny herinandro lasa'},{fr:'descendre',type:'verbe',mg:'nidina'},{fr:'mur',type:'nom',mg:'rindrina'}]},
+  {verb:'dire',tense:'Passé composé',adv:'actuellement',sentence:'actuellement, vous ___ (dire) la vérité à votre patron.',answer:'dites',full:'Actuellement, vous dites la vérité à votre patron.',expl:'ATTENTION : « actuellement » = maintenant → Présent ! Vous + dire → dites.',gloss:[{fr:'actuellement',type:'adv.',mg:'amin\'izao fotoana izao'},{fr:'dire',type:'verbe irr.',mg:'miteny / milaza'},{fr:'patron',type:'nom',mg:'lehibe / tompon-draharaha'}]},
+  {verb:'s\'habiller',tense:'Passé composé',adv:'ce matin',sentence:'ce matin, tu ___ (s\'habiller) très vite à cause du froid.',answer:'t\'es habillé(e)',full:'Ce matin, tu t\'es habillé(e) très vite à cause du froid.',expl:'« Ce matin » → Passé composé. S\'habiller + ÊTRE → t\'es habillé(e).',gloss:[{fr:'ce matin',type:'adv.',mg:'androany maraina'},{fr:'s\'habiller',type:'verbe pron.',mg:'niakanjo'},{fr:'froid',type:'nom',mg:'mangatsiaka'},{fr:'à cause de',type:'loc.',mg:'noho ny'}]},
+  {verb:'courir',tense:'Passé composé',adv:'tous les jours',sentence:'tous les jours, le joueur de foot ___ (courir) sur le terrain.',answer:'court',full:'Tous les jours, le joueur de foot court sur le terrain.',expl:'ATTENTION : « tous les jours » = habitude → Présent ! Il court.',gloss:[{fr:'tous les jours',type:'adv.',mg:'isan\'andro'},{fr:'courir',type:'verbe irr.',mg:'mihazakazaka'},{fr:'terrain',type:'nom',mg:'kianja'}]},
+  {verb:'bâtir',tense:'Passé composé',adv:'l\'année dernière',sentence:'l\'année dernière, les maçons ___ (bâtir) un grand atelier.',answer:'ont bâti',full:'L\'année dernière, les maçons ont bâti un grand atelier.',expl:'« L\'année dernière » → Passé composé. Bâtir + AVOIR → ont bâti.',gloss:[{fr:'l\'année dernière',type:'adv.',mg:'ny taona lasa'},{fr:'bâtir',type:'verbe',mg:'nanorina'},{fr:'atelier',type:'nom',mg:'atelier / toeram-piasana'}]},
+  {verb:'prendre',tense:'Passé composé',adv:'il y a dix minutes',sentence:'il y a dix minutes, Rabe ___ (prendre) une décision importante.',answer:'a pris',full:'Il y a dix minutes, Rabe a pris une décision importante.',expl:'« Il y a dix minutes » → Passé composé. Prendre + AVOIR → a pris.',perso:true,gloss:[{fr:'il y a dix minutes',type:'adv.',mg:'folo minitra lasa'},{fr:'prendre une décision',type:'expr.',mg:'manapa-kevitra'},{fr:'important',type:'adj.',mg:'manan-danja'}]},
+  {verb:'mettre',tense:'Passé composé',adv:'il y a quelques heures',sentence:'il y a quelques heures, les clients ___ (mettre) leurs affaires dans la voiture.',answer:'ont mis',full:'Il y a quelques heures, les clients ont mis leurs affaires dans la voiture.',expl:'« Il y a quelques heures » → Passé composé. Mettre + AVOIR → ont mis. Participe : mis.',gloss:[{fr:'il y a quelques heures',type:'adv.',mg:'ora vitsivitsy lasa'},{fr:'mettre',type:'verbe irr.',mg:'nametraka'},{fr:'affaires',type:'nom',mg:'entana / fananana'}]},
+  {verb:'tomber',tense:'Passé composé',adv:'soudain',sentence:'soudain, le joueur de foot ___ (tomber) par terre à cause d\'une blessure.',answer:'est tombé',full:'Soudain, le joueur de foot est tombé par terre à cause d\'une blessure.',expl:'« Soudain » = action soudaine → Passé composé. Tomber + ÊTRE → est tombé.',gloss:[{fr:'soudain',type:'adv.',mg:'tampoka'},{fr:'tomber',type:'verbe',mg:'lavo / nianjera'},{fr:'blessure',type:'nom',mg:'ratra'},{fr:'par terre',type:'expr.',mg:'amin\'ny tany'}]},
+  {verb:'réussir',tense:'Passé composé',adv:'cette année-là',sentence:'cette année-là, elle ___ (réussir) son examen de sauveteur avec succès.',answer:'a réussi',full:'Cette année-là, elle a réussi son examen de sauveteur avec succès.',expl:'« Cette année-là » → Passé composé. Réussir + AVOIR → a réussi.',gloss:[{fr:'cette année-là',type:'adv.',mg:'tamin\'izany taona izany'},{fr:'réussir',type:'verbe',mg:'nahomby / tafita'},{fr:'examen',type:'nom',mg:'fanadinana'},{fr:'succès',type:'nom',mg:'fahombiazan\'ny asa'}]},
+]},
+{key:'pc3',name:'Passé composé',sub:'Section 3 · 10 questions',icon:'⭐',questions:[
+  {verb:'acheter',tense:'Passé composé',adv:'la semaine dernière',sentence:'la semaine dernière, les clients ___ (acheter) une nouvelle moto.',answer:'ont acheté',full:'La semaine dernière, les clients ont acheté une nouvelle moto.',expl:'« La semaine dernière » → Passé composé. Acheter + AVOIR → ont acheté.',gloss:[{fr:'la semaine dernière',type:'adv.',mg:'ny herinandro lasa'},{fr:'acheter',type:'verbe',mg:'nividy'},{fr:'nouvelle',type:'adj.',mg:'vaovao'}]},
+  {verb:'rentrer',tense:'Passé composé',adv:'hier soir',sentence:'hier soir, vous ___ (rentrer) très tard du garage.',answer:'êtes rentrés',full:'Hier soir, vous êtes rentrés très tard du garage.',expl:'« Hier soir » → Passé composé. Rentrer + ÊTRE → êtes rentrés.',perso:true,gloss:[{fr:'hier soir',type:'adv.',mg:'omaly hariva'},{fr:'rentrer',type:'verbe',mg:'nody'},{fr:'tard',type:'adv.',mg:'tara'}]},
+  {verb:'augmenter',tense:'Passé composé',adv:'récemment',sentence:'récemment, le prix des pièces de rechange ___ (augmenter) sur le marché.',answer:'a augmenté',full:'Récemment, le prix des pièces de rechange a augmenté sur le marché.',expl:'« Récemment » → Passé composé. Augmenter + AVOIR → a augmenté.',perso:true,gloss:[{fr:'récemment',type:'adv.',mg:'tsy ela akory'},{fr:'augmenter',type:'verbe',mg:'nitombo / niakatra'},{fr:'prix',type:'nom',mg:'vidiny'},{fr:'marché',type:'nom',mg:'tsena'}]},
+  {verb:'terminer',tense:'Passé composé',adv:'en 2024',sentence:'en 2024, les ouvriers ___ (terminer) la construction du nouveau garage.',answer:'ont terminé',full:'En 2024, les ouvriers ont terminé la construction du nouveau garage.',expl:'Date précise dans le passé → Passé composé. Terminer + AVOIR → ont terminé.',gloss:[{fr:'en 2024',type:'adv.',mg:'tamin\'ny 2024'},{fr:'terminer',type:'verbe',mg:'mamarana / mahavita'},{fr:'construction',type:'nom',mg:'fanorenana'},{fr:'ouvriers',type:'nom',mg:'mpiasa'}]},
+  {verb:'signer',tense:'Passé composé',adv:'il y a trois jours',sentence:'il y a trois jours, Brave ___ (signer) un contrat important avec un fournisseur.',answer:'a signé',full:'Il y a trois jours, Brave a signé un contrat important avec un fournisseur.',expl:'« Il y a trois jours » → Passé composé. Signer + AVOIR → a signé.',perso:true,gloss:[{fr:'il y a trois jours',type:'adv.',mg:'telo andro lasa'},{fr:'signer',type:'verbe',mg:'nanao sonia'},{fr:'contrat',type:'nom',mg:'fifanarahana'},{fr:'fournisseur',type:'nom',mg:'mpamatsy'}]},
+  {verb:'se réveiller',tense:'Passé composé',adv:'ce jour-là',sentence:'ce jour-là, ils ___ (se réveiller) très tôt pour ne pas rater le bus.',answer:'se sont réveillés',full:'Ce jour-là, ils se sont réveillés très tôt pour ne pas rater le bus.',expl:'« Ce jour-là » → Passé composé. Se réveiller + ÊTRE → se sont réveillés.',gloss:[{fr:'ce jour-là',type:'adv.',mg:'tamin\'izany andro izany'},{fr:'se réveiller',type:'verbe pron.',mg:'nifoha'},{fr:'rater',type:'verbe',mg:'very / diso'}]},
+  {verb:'apprendre',tense:'Passé composé',adv:'déjà',sentence:'déjà, Brave ___ (apprendre) toutes les règles de conjugaison avec son professeur.',answer:'a appris',full:'Déjà, Brave a appris toutes les règles de conjugaison avec son professeur.',expl:'« Déjà » = action accomplie → Passé composé. Apprendre + AVOIR → a appris.',perso:true,gloss:[{fr:'déjà',type:'adv.',mg:'efa / sahady'},{fr:'apprendre',type:'verbe',mg:'nianatra'},{fr:'règles',type:'nom',mg:'fitsipika'}]},
+  {verb:'ouvrir',tense:'Passé composé',adv:'désormais',sentence:'désormais, nous ___ (ouvrir) le dictionnaire pour corriger les fautes.',answer:'ouvrons',full:'Désormais, nous ouvrons le dictionnaire pour corriger les fautes.',expl:'ATTENTION : « désormais » = à partir de maintenant → Présent ! Nous ouvrons.',gloss:[{fr:'désormais',type:'adv.',mg:'hatramin\'izao / manomboka izao'},{fr:'ouvrir',type:'verbe irr.',mg:'manokatra'},{fr:'dictionnaire',type:'nom',mg:'diksionera'},{fr:'fautes',type:'nom',mg:'diso / fahadisoana'}]},
+  {verb:'noircir',tense:'Passé composé',adv:'la nuit dernière',sentence:'la nuit dernière, un gros orage ___ (noircir) le ciel de la ville.',answer:'a noirci',full:'La nuit dernière, un gros orage a noirci le ciel de la ville.',expl:'« La nuit dernière » → Passé composé. Noircir + AVOIR → a noirci.',gloss:[{fr:'la nuit dernière',type:'adv.',mg:'omaly alina'},{fr:'noircir',type:'verbe',mg:'nampanjanaka / mihamaizina'},{fr:'ciel',type:'nom',mg:'lanitra'},{fr:'ville',type:'nom',mg:'tanàna'}]},
+  {verb:'se souvenir',tense:'Passé composé',adv:'hier',sentence:'hier, tu ___ (se souvenir) de l\'anniversaire de Mama Jo.',answer:'t\'es souvenu(e)',full:'Hier, tu t\'es souvenu(e) de l\'anniversaire de Mama Jo.',expl:'« Hier » → Passé composé. Se souvenir + ÊTRE → t\'es souvenu(e).',perso:true,gloss:[{fr:'hier',type:'adv.',mg:'omaly'},{fr:'se souvenir',type:'verbe pron.',mg:'nahatsiaro'},{fr:'anniversaire',type:'nom',mg:'fety nahaterahana'}]},
+]},
+{key:'imp1',name:'Imparfait',sub:'Section 1 · 10 questions',icon:'🌅',questions:[
+  {verb:'parler',tense:'Imparfait',adv:'avant',sentence:'avant, Brave ___ (parler) seulement malgache avec ses clients.',answer:'parlait',full:'Avant, Brave parlait seulement malgache avec ses clients.',expl:'« Avant » = habitude passée → Imparfait. Il + parler → parlait.',perso:true,gloss:[{fr:'avant',type:'adv.',mg:'taloha'},{fr:'parler',type:'verbe',mg:'niteny / niresaka'},{fr:'seulement',type:'adv.',mg:'fotsiny / ihany'}]},
+  {verb:'manger',tense:'Imparfait',adv:'quand j\'étais petit',sentence:'quand Aaron était petit, il ___ (manger) beaucoup de riz chaque jour.',answer:'mangeait',full:'Quand Aaron était petit, il mangeait beaucoup de riz chaque jour.',expl:'« Quand il était petit » = description passée → Imparfait. Il + manger → mangeait.',perso:true,gloss:[{fr:'quand il était petit',type:'expr.',mg:'fony izy mbola kely'},{fr:'manger',type:'verbe',mg:'nihinana'},{fr:'riz',type:'nom',mg:'vary'}]},
+  {verb:'regarder',tense:'Imparfait',adv:'autrefois',sentence:'autrefois, nous ___ (regarder) les étoiles ensemble le soir.',answer:'regardions',full:'Autrefois, nous regardions les étoiles ensemble le soir.',expl:'« Autrefois » = habitude passée → Imparfait. Nous + regarder → regardions.',gloss:[{fr:'autrefois',type:'adv.',mg:'fahiny / taloha taloha'},{fr:'étoiles',type:'nom',mg:'kintana'},{fr:'ensemble',type:'adv.',mg:'miara / miaraka'}]},
+  {verb:'travailler',tense:'Imparfait',adv:'à cette époque',sentence:'à cette époque, mon père ___ (travailler) dans une grande usine.',answer:'travaillait',full:'À cette époque, mon père travaillait dans une grande usine.',expl:'« À cette époque » → Imparfait. Il + travailler → travaillait.',gloss:[{fr:'à cette époque',type:'adv.',mg:'tamin\'izany fotoana izany'},{fr:'travailler',type:'verbe',mg:'niasa'},{fr:'usine',type:'nom',mg:'fabrika / orinasa'}]},
+  {verb:'écouter',tense:'Imparfait',adv:'tous les soirs',sentence:'tous les soirs, Mama Jo ___ (écouter) la radio en cuisinant.',answer:'écoutait',full:'Tous les soirs, Mama Jo écoutait la radio en cuisinant.',expl:'« Tous les soirs » au passé = habitude → Imparfait. Elle + écouter → écoutait.',perso:true,gloss:[{fr:'tous les soirs',type:'adv.',mg:'isan\'hariva'},{fr:'écouter',type:'verbe',mg:'nihaino'},{fr:'cuisiner',type:'verbe',mg:'nanao sakafo'}]},
+  {verb:'finir',tense:'Imparfait',adv:'d\'habitude',sentence:'d\'habitude, vous ___ (finir) le travail à 17 heures.',answer:'finissiez',full:'D\'habitude, vous finissiez le travail à 17 heures.',expl:'« D\'habitude » → Imparfait. Vous + finir → finissiez (-issiez pour les verbes en -ir).',gloss:[{fr:'d\'habitude',type:'adv.',mg:'mahazatra / mazàna'},{fr:'finir',type:'verbe',mg:'nifarana'},{fr:'travail',type:'nom',mg:'asa'}]},
+  {verb:'choisir',tense:'Imparfait',adv:'chaque fois',sentence:'chaque fois, Jo ___ (choisir) la même place dans la voiture.',answer:'choisissait',full:'Chaque fois, Jo choisissait la même place dans la voiture.',expl:'« Chaque fois » au passé → Imparfait. Il + choisir → choisissait.',perso:true,gloss:[{fr:'chaque fois',type:'adv.',mg:'isaky ny'},{fr:'choisir',type:'verbe',mg:'nisafidy'},{fr:'même',type:'adj.',mg:'mitovy / iray ihany'}]},
+  {verb:'vendre',tense:'Imparfait',adv:'avant',sentence:'avant, ils ___ (vendre) des fruits ici, pas des pièces de moto.',answer:'vendaient',full:'Avant, ils vendaient des fruits ici, pas des pièces de moto.',expl:'« Avant » = situation passée → Imparfait. Ils + vendre → vendaient.',gloss:[{fr:'avant',type:'adv.',mg:'taloha'},{fr:'vendre',type:'verbe',mg:'nivarotra'},{fr:'fruits',type:'nom',mg:'voankazo'},{fr:'ici',type:'adv.',mg:'eto'}]},
+  {verb:'se coucher',tense:'Imparfait',adv:'avant',sentence:'avant, Brave ___ (se coucher) très tard parce qu\'il réparait des motos toute la nuit.',answer:'se couchait',full:'Avant, Brave se couchait très tard parce qu\'il réparait des motos toute la nuit.',expl:'« Avant » = habitude passée → Imparfait. Il + se coucher → se couchait.',perso:true,gloss:[{fr:'avant',type:'adv.',mg:'taloha'},{fr:'se coucher',type:'verbe pron.',mg:'nandry / natory'},{fr:'toute la nuit',type:'expr.',mg:'nandritry ny alina manontolo'}]},
+  {verb:'jouer',tense:'Imparfait',adv:'quand ils étaient jeunes',sentence:'quand ils étaient jeunes, Jo et Aaron ___ (jouer) au foot tous les après-midis.',answer:'jouaient',full:'Quand ils étaient jeunes, Jo et Aaron jouaient au foot tous les après-midis.',expl:'« Quand ils étaient jeunes » → Imparfait. Ils + jouer → jouaient.',perso:true,gloss:[{fr:'quand ils étaient jeunes',type:'expr.',mg:'fony izy ireo mbola tanora'},{fr:'jouer au foot',type:'expr.',mg:'nilalao baolina kitra'},{fr:'après-midis',type:'nom',mg:'tolak\'andro'}]},
+]},
+{key:'fut1',name:'Futur simple',sub:'Section 1 · 10 questions',icon:'🚀',questions:[
+  {verb:'parler',tense:'Futur simple',adv:'demain',sentence:'demain, Brave ___ (parler) avec un nouveau fournisseur de pièces.',answer:'parlera',full:'Demain, Brave parlera avec un nouveau fournisseur de pièces.',expl:'« Demain » = futur → Futur simple. Il + parler → parlera (infinitif + -a).',perso:true,gloss:[{fr:'demain',type:'adv.',mg:'rahampitso'},{fr:'parler',type:'verbe',mg:'hiteny / hiresaka'},{fr:'fournisseur',type:'nom',mg:'mpamatsy'}]},
+  {verb:'acheter',tense:'Futur simple',adv:'demain matin',sentence:'demain matin, Mama Jo ___ (acheter) du pain pour toute la famille.',answer:'achètera',full:'Demain matin, Mama Jo achètera du pain pour toute la famille.',expl:'« Demain matin » → Futur simple. Elle + acheter → achètera.',perso:true,gloss:[{fr:'demain matin',type:'adv.',mg:'rahampitso maraina'},{fr:'acheter',type:'verbe',mg:'hividy'},{fr:'pain',type:'nom',mg:'mofo'},{fr:'famille',type:'nom',mg:'fianakaviana'}]},
+  {verb:'finir',tense:'Futur simple',adv:'la semaine prochaine',sentence:'la semaine prochaine, Rabe ___ (finir) de ranger tout le stock.',answer:'finira',full:'La semaine prochaine, Rabe finira de ranger tout le stock.',expl:'« La semaine prochaine » → Futur simple. Il + finir → finira.',perso:true,gloss:[{fr:'la semaine prochaine',type:'adv.',mg:'ny herinandro ho avy'},{fr:'finir',type:'verbe',mg:'hahavita'},{fr:'stock',type:'nom',mg:'entana fitahirizana'}]},
+  {verb:'aller',tense:'Futur simple',adv:'l\'année prochaine',sentence:'l\'année prochaine, toute la famille ___ (aller) à la plage.',answer:'ira',full:'L\'année prochaine, toute la famille ira à la plage.',expl:'« L\'année prochaine » → Futur simple. Aller irrégulier : elle → ira.',perso:true,gloss:[{fr:'l\'année prochaine',type:'adv.',mg:'ny taona ho avy'},{fr:'aller',type:'verbe irr.',mg:'handeha'},{fr:'plage',type:'nom',mg:'moron-dranomasina'}]},
+  {verb:'faire',tense:'Futur simple',adv:'bientôt',sentence:'bientôt, Brave ___ (faire) un voyage à Antananarivo pour acheter des pièces.',answer:'fera',full:'Bientôt, Brave fera un voyage à Antananarivo pour acheter des pièces.',expl:'« Bientôt » → Futur simple. Faire irrégulier : il → fera.',perso:true,gloss:[{fr:'bientôt',type:'adv.',mg:'tsy ho ela / akaiky'},{fr:'faire',type:'verbe irr.',mg:'hanao'},{fr:'voyage',type:'nom',mg:'diabe / safara'}]},
+  {verb:'venir',tense:'Futur simple',adv:'dans deux jours',sentence:'dans deux jours, un gros client ___ (venir) chercher sa moto réparée.',answer:'viendra',full:'Dans deux jours, un gros client viendra chercher sa moto réparée.',expl:'« Dans deux jours » → Futur simple. Venir irrégulier : il → viendra.',gloss:[{fr:'dans deux jours',type:'adv.',mg:'roa andro any aoriana'},{fr:'venir',type:'verbe irr.',mg:'ho avy'},{fr:'réparée',type:'adj.',mg:'voanamboatra'}]},
+  {verb:'réussir',tense:'Futur simple',adv:'un jour',sentence:'un jour, tu ___ (réussir) à parler français couramment !',answer:'réussiras',full:'Un jour, tu réussiras à parler français couramment !',expl:'« Un jour » → Futur simple. Tu + réussir → réussiras.',gloss:[{fr:'un jour',type:'adv.',mg:'indray andro'},{fr:'réussir',type:'verbe',mg:'hambomby'},{fr:'couramment',type:'adv.',mg:'tsara / mahay tsara'}]},
+  {verb:'manger',tense:'Futur simple',adv:'ce soir',sentence:'ce soir, toute la famille ___ (manger) ensemble chez grand-mère.',answer:'mangera',full:'Ce soir, toute la famille mangera ensemble chez grand-mère.',expl:'« Ce soir » = futur → Futur simple. Elle + manger → mangera.',perso:true,gloss:[{fr:'ce soir',type:'adv.',mg:'androany hariva'},{fr:'manger',type:'verbe',mg:'hihinana'},{fr:'grand-mère',type:'nom',mg:'renibe / dadabe vavy'}]},
+  {verb:'jouer',tense:'Futur simple',adv:'samedi prochain',sentence:'samedi prochain, Jo et Aaron ___ (jouer) au foot avec leurs amis.',answer:'joueront',full:'Samedi prochain, Jo et Aaron joueront au foot avec leurs amis.',expl:'« Samedi prochain » → Futur simple. Ils + jouer → joueront.',perso:true,gloss:[{fr:'samedi prochain',type:'adv.',mg:'ny Sabotsy ho avy'},{fr:'jouer',type:'verbe',mg:'hilalao'},{fr:'amis',type:'nom',mg:'namana'}]},
+  {verb:'ouvrir',tense:'Futur simple',adv:'l\'année prochaine',sentence:'l\'année prochaine, Brave ___ (ouvrir) un deuxième magasin de moto.',answer:'ouvrira',full:'L\'année prochaine, Brave ouvrira un deuxième magasin de moto.',expl:'« L\'année prochaine » → Futur simple. Ouvrir irrégulier : il → ouvrira.',perso:true,gloss:[{fr:'l\'année prochaine',type:'adv.',mg:'ny taona ho avy'},{fr:'ouvrir',type:'verbe irr.',mg:'hanokatra'},{fr:'deuxième',type:'adj.',mg:'faharoa'}]},
+]},
+];
+// ── SECTIONS VOCABULAIRE ──
+const VC_SECTIONS = [
+// ── GROUPE 1 Section A (15 verbes) ──
+{key:'v1a',name:'Part A',sub:'Verbes -ER · 15 mots',icon:'1️⃣',words:[
+  {fr:'parler',mg:'miteny / miresaka',type:'verbe -ER'},
+  {fr:'aimer',mg:'tia',type:'verbe -ER'},
+  {fr:'adorer',mg:'tia indrindra / mankafy',type:'verbe -ER'},
+  {fr:'détester',mg:'mankahala',type:'verbe -ER'},
+  {fr:'préférer',mg:'tia kokoa / safidiko',type:'verbe -ER'},
+  {fr:'regarder',mg:'mijery',type:'verbe -ER'},
+  {fr:'écouter',mg:'mihaino',type:'verbe -ER'},
+  {fr:'étudier',mg:'mianatra',type:'verbe -ER'},
+  {fr:'travailler',mg:'miasa',type:'verbe -ER'},
+  {fr:'réparer',mg:'manamboatra',type:'verbe -ER'},
+  {fr:'acheter',mg:'mividy',type:'verbe -ER'},
+  {fr:'vendre',mg:'mivarotra',type:'verbe -ER'},
+  {fr:'donner',mg:'manome',type:'verbe -ER'},
+  {fr:'chercher',mg:'mitady',type:'verbe -ER'},
+  {fr:'appeler',mg:'miantso',type:'verbe -ER'},
+]},
+// ── GROUPE 1 Section B (15 verbes) ──
+{key:'v1b',name:'Part B',sub:'Verbes -ER · 15 mots',icon:'1️⃣',words:[
+  {fr:'préparer',mg:'manomana / miomana',type:'verbe -ER'},
+  {fr:'laver',mg:'manasa',type:'verbe -ER'},
+  {fr:'monter',mg:'miakatra',type:'verbe -ER'},
+  {fr:'rester',mg:'mitoetra / mijanona',type:'verbe -ER'},
+  {fr:'entrer',mg:'miditra',type:'verbe -ER'},
+  {fr:'tomber',mg:'lavo / mianjera',type:'verbe -ER'},
+  {fr:'passer',mg:'mandalo',type:'verbe -ER'},
+  {fr:'arriver',mg:'tonga',type:'verbe -ER'},
+  {fr:'ranger',mg:'mandamina',type:'verbe -ER'},
+  {fr:'vérifier',mg:'manamarina',type:'verbe -ER'},
+  {fr:'gonfler',mg:'manasofoka rivotra',type:'verbe -ER'},
+  {fr:'chanter',mg:'mihira',type:'verbe -ER'},
+  {fr:'rentrer',mg:'mody',type:'verbe -ER'},
+  {fr:'augmenter',mg:'mitombo / miakatra',type:'verbe -ER'},
+  {fr:'terminer',mg:'mamarana / mahavita',type:'verbe -ER'},
+]},
+// ── GROUPE 2 Section A (15 verbes) ──
+{key:'v2a',name:'Part A',sub:'Verbes -IR · 15 mots',icon:'2️⃣',words:[
+  {fr:'finir',mg:'mamarana / mahavita',type:'verbe -IR'},
+  {fr:'choisir',mg:'misafidy',type:'verbe -IR'},
+  {fr:'réjouir',mg:'mifaly / miravoravo',type:'verbe -IR'},
+  {fr:'enrichir',mg:'manankarena',type:'verbe -IR'},
+  {fr:'affaiblir',mg:'mihaosa / mihamandratra',type:'verbe -IR'},
+  {fr:'nourrir',mg:'mamelona / mamahana',type:'verbe -IR'},
+  {fr:'réussir',mg:'nahomby / tafita',type:'verbe -IR'},
+  {fr:'remplir',mg:'mameno',type:'verbe -IR'},
+  {fr:'grandir',mg:'mitombo / lehibe',type:'verbe -IR'},
+  {fr:'grossir',mg:'misimisy / mavesatra',type:'verbe -IR'},
+  {fr:'maigrir',mg:'mihamalemy / mitsindroka',type:'verbe -IR'},
+  {fr:'blanchir',mg:'mihatsara fotsy',type:'verbe -IR'},
+  {fr:'noircir',mg:'mihamaizina',type:'verbe -IR'},
+  {fr:'rougir',mg:'mihodina mena / menatra',type:'verbe -IR'},
+  {fr:'vieillir',mg:'antitra / mihafahefa',type:'verbe -IR'},
+]},
+// ── GROUPE 2 Section B (13 verbes) ──
+{key:'v2b',name:'Part B',sub:'Verbes -IR · 13 mots',icon:'2️⃣',words:[
+  {fr:'salir',mg:'manimba / mamorona loto',type:'verbe -IR'},
+  {fr:'nettoyer',mg:'manadio',type:'verbe -IR'},
+  {fr:'réfléchir',mg:'misaina / manonona',type:'verbe -IR'},
+  {fr:'guérir',mg:'sitrana',type:'verbe -IR'},
+  {fr:'agir',mg:'manao / miasa',type:'verbe -IR'},
+  {fr:'punir',mg:'manasazy',type:'verbe -IR'},
+  {fr:'bondir',mg:'mitsambikina',type:'verbe -IR'},
+  {fr:'franchir',mg:'miampita',type:'verbe -IR'},
+  {fr:'nourrir',mg:'mamelona / mamahana',type:'verbe -IR'},
+  {fr:'réjouir',mg:'mifaly / miravoravo',type:'verbe -IR'},
+  {fr:'enrichir',mg:'manankarena',type:'verbe -IR'},
+  {fr:'affaiblir',mg:'mihaosa',type:'verbe -IR'},
+  {fr:'s\'enrichir',mg:'manankarena',type:'verbe pron.'},
+]},
+// ── GROUPE 3 Section A (15 verbes) ──
+{key:'v3a',name:'Part A',sub:'Irréguliers · 15 mots',icon:'3️⃣',words:[
+  {fr:'être',mg:'ho / misy',type:'verbe irr.'},
+  {fr:'avoir',mg:'manana',type:'verbe irr.'},
+  {fr:'faire',mg:'manao',type:'verbe irr.'},
+  {fr:'aller',mg:'mandeha',type:'verbe irr.'},
+  {fr:'venir',mg:'tonga / mankany',type:'verbe irr.'},
+  {fr:'se souvenir',mg:'mahatsiaro',type:'verbe pron.'},
+  {fr:'partir',mg:'miala / mandeha',type:'verbe irr.'},
+  {fr:'sortir',mg:'mivoaka',type:'verbe irr.'},
+  {fr:'descendre',mg:'midina',type:'verbe irr.'},
+  {fr:'prendre',mg:'mitondra / maka',type:'verbe irr.'},
+  {fr:'voir',mg:'mahita',type:'verbe irr.'},
+  {fr:'pouvoir',mg:'afaka / mahay',type:'verbe irr.'},
+  {fr:'vouloir',mg:'te-ho / tia',type:'verbe irr.'},
+  {fr:'dire',mg:'miteny / milaza',type:'verbe irr.'},
+  {fr:'croire',mg:'mino / mihevitra',type:'verbe irr.'},
+]},
+// ── GROUPE 3 Section B (15 verbes) ──
+{key:'v3b',name:'Part B',sub:'Irréguliers · 15 mots',icon:'3️⃣',words:[
+  {fr:'mettre',mg:'mametraka',type:'verbe irr.'},
+  {fr:'s\'asseoir',mg:'mipetraka',type:'verbe pron.'},
+  {fr:'se plaindre',mg:'misento / mitaraina',type:'verbe pron.'},
+  {fr:'se taire',mg:'mangina',type:'verbe pron.'},
+  {fr:'écrire',mg:'manoratra',type:'verbe irr.'},
+  {fr:'lire',mg:'mamaky',type:'verbe irr.'},
+  {fr:'courir',mg:'mihazakazaka',type:'verbe irr.'},
+  {fr:'boire',mg:'misotro',type:'verbe irr.'},
+  {fr:'ouvrir',mg:'manokatra',type:'verbe irr.'},
+  {fr:'détruire',mg:'mandrava / manimba',type:'verbe irr.'},
+  {fr:'bâtir',mg:'manorina',type:'verbe irr.'},
+  {fr:'débattre',mg:'mifanakalo hevitra',type:'verbe irr.'},
+  {fr:'bouillir',mg:'mangotraka',type:'verbe irr.'},
+  {fr:'entendre',mg:'mandre',type:'verbe irr.'},
+  {fr:'produire',mg:'mamoaka',type:'verbe irr.'},
+]},
+// ── PRONOMINAUX (20 verbes) ──
+{key:'vpron',name:'Pronominaux',sub:'Se lever, se laver… · 20 mots',icon:'🔄',words:[
+  {fr:'s\'appeler',mg:'ny anarako / ny anarany',type:'verbe pron.'},
+  {fr:'se préparer',mg:'miomana',type:'verbe pron.'},
+  {fr:'se laver',mg:'misasa',type:'verbe pron.'},
+  {fr:'s\'habiller',mg:'mitafy / miakanjo',type:'verbe pron.'},
+  {fr:'s\'occuper de',mg:'mikarakara / misahana',type:'verbe pron.'},
+  {fr:'se tromper',mg:'diso / mivaona',type:'verbe pron.'},
+  {fr:'se dépêcher',mg:'maika / faingana',type:'verbe pron.'},
+  {fr:'s\'arrêter',mg:'mijanona / mitsahatra',type:'verbe pron.'},
+  {fr:'s\'amuser',mg:'milalao / mifaly',type:'verbe pron.'},
+  {fr:'se lever',mg:'mitsangana / mifoha',type:'verbe pron.'},
+  {fr:'se coucher',mg:'mandry / matory',type:'verbe pron.'},
+  {fr:'se réveiller',mg:'mifoha',type:'verbe pron.'},
+  {fr:'se regarder',mg:'mijery tena',type:'verbe pron.'},
+  {fr:'se baigner',mg:'milomano / mandro',type:'verbe pron.'},
+  {fr:'se souvenir',mg:'mahatsiaro',type:'verbe pron.'},
+  {fr:'se réjouir',mg:'mifaly / miravoravo',type:'verbe pron.'},
+  {fr:'se nourrir',mg:'mihinana / miteza',type:'verbe pron.'},
+  {fr:'s\'enrichir',mg:'manankarena',type:'verbe pron.'},
+  {fr:'s\'affaiblir',mg:'mihaosa / mihamandratra',type:'verbe pron.'},
+  {fr:'se plaindre',mg:'misento / mitaraina',type:'verbe pron.'},
+]},
+// ── ADVERBES DE TEMPS (15 mots) ──
+{key:'adv1',name:'De temps',sub:'Hier, demain… · 15 mots',icon:'⏰',words:[
+  {fr:'hier',mg:'omaly',type:'adv. temps'},
+  {fr:'aujourd\'hui',mg:'androany',type:'adv. temps'},
+  {fr:'demain',mg:'rahampitso',type:'adv. temps'},
+  {fr:'avant-hier',mg:'heritaoriana',type:'adv. temps'},
+  {fr:'après-demain',mg:'rahafakampitso',type:'adv. temps'},
+  {fr:'maintenant',mg:'ankehitriny / izao',type:'adv. temps'},
+  {fr:'bientôt',mg:'tsy ho ela / akaiky',type:'adv. temps'},
+  {fr:'tout à l\'heure',mg:'teo kelin\'izay',type:'adv. temps'},
+  {fr:'avant',mg:'taloha / aloha',type:'adv. temps'},
+  {fr:'autrefois',mg:'fahiny / taloha taloha',type:'adv. temps'},
+  {fr:'actuellement',mg:'amin\'izao fotoana izao',type:'adv. temps'},
+  {fr:'récemment',mg:'tsy ela akory',type:'adv. temps'},
+  {fr:'soudain',mg:'tampoka / teo no ho eo',type:'adv. temps'},
+  {fr:'en ce moment',mg:'amin\'izao fotoana izao',type:'adv. temps'},
+  {fr:'à cette époque',mg:'tamin\'izany fotoana izany',type:'adv. temps'},
+]},
+// ── ADVERBES DE FRÉQUENCE (15 mots) ──
+{key:'adv2',name:'De fréquence',sub:'Toujours, jamais… · 15 mots',icon:'🔁',words:[
+  {fr:'toujours',mg:'foana / mandrakariva',type:'adv. fréquence'},
+  {fr:'souvent',mg:'matetika',type:'adv. fréquence'},
+  {fr:'parfois',mg:'indraindray',type:'adv. fréquence'},
+  {fr:'jamais',mg:'tsy mba... na oviana na oviana',type:'adv. fréquence'},
+  {fr:'rarement',mg:'mahalana',type:'adv. fréquence'},
+  {fr:'d\'habitude',mg:'mahazatra / mazàna',type:'adv. fréquence'},
+  {fr:'généralement',mg:'mazàna / amin\'ny ankabeazany',type:'adv. fréquence'},
+  {fr:'régulièrement',mg:'amin\'ny fotoana voatondro',type:'adv. fréquence'},
+  {fr:'constamment',mg:'hatrany / lalandava',type:'adv. fréquence'},
+  {fr:'fréquemment',mg:'matetika / amin\'ny fotoana maro',type:'adv. fréquence'},
+  {fr:'chaque jour',mg:'isan\'andro',type:'adv. fréquence'},
+  {fr:'chaque matin',mg:'isan\'maraina',type:'adv. fréquence'},
+  {fr:'tous les soirs',mg:'isan\'hariva',type:'adv. fréquence'},
+  {fr:'de temps en temps',mg:'indraindray',type:'adv. fréquence'},
+  {fr:'chaque fois',mg:'isaky ny',type:'adv. fréquence'},
+]},
+// ── ADVERBES DE MANIÈRE (15 mots) ──
+{key:'adv3',name:'De manière',sub:'Vite, calmement… · 15 mots',icon:'💨',words:[
+  {fr:'vite',mg:'haingana / faingana',type:'adv. manière'},
+  {fr:'lentement',mg:'moramora / tsindrin-dàlana',type:'adv. manière'},
+  {fr:'calmement',mg:'amim-piadanana / mangina',type:'adv. manière'},
+  {fr:'rapidement',mg:'haingana / faingana',type:'adv. manière'},
+  {fr:'bien',mg:'tsara / ampy',type:'adv. manière'},
+  {fr:'mal',mg:'ratsy / tsy tsara',type:'adv. manière'},
+  {fr:'fort',mg:'mafy / matanjaka',type:'adv. manière'},
+  {fr:'doucement',mg:'moramora / kely kely',type:'adv. manière'},
+  {fr:'ensemble',mg:'miara / miaraka',type:'adv. manière'},
+  {fr:'seul',mg:'irery / irery foana',type:'adv. manière'},
+  {fr:'couramment',mg:'tsara / mahay tsara',type:'adv. manière'},
+  {fr:'sérieusement',mg:'amim-pahanterana',type:'adv. manière'},
+  {fr:'attentivement',mg:'amim-pitandremana',type:'adv. manière'},
+  {fr:'facilement',mg:'mora / tsotra',type:'adv. manière'},
+  {fr:'difficilement',mg:'sarotra',type:'adv. manière'},
+]},
+// ── ADVERBES DE LIEU (12 mots) ──
+{key:'adv4',name:'De lieu',sub:'Ici, là-bas… · 12 mots',icon:'📍',words:[
+  {fr:'ici',mg:'eto / aty',type:'adv. lieu'},
+  {fr:'là',mg:'eo / ao',type:'adv. lieu'},
+  {fr:'là-bas',mg:'any / eroa',type:'adv. lieu'},
+  {fr:'partout',mg:'manerana / hatraiza hatraiza',type:'adv. lieu'},
+  {fr:'nulle part',mg:'tsy misy toerana',type:'adv. lieu'},
+  {fr:'quelque part',mg:'any amintsasany toerana',type:'adv. lieu'},
+  {fr:'dehors',mg:'eny ivelany',type:'adv. lieu'},
+  {fr:'dedans',mg:'ao anaty',type:'adv. lieu'},
+  {fr:'en haut',mg:'eny ambony',type:'adv. lieu'},
+  {fr:'en bas',mg:'eny ambany',type:'adv. lieu'},
+  {fr:'près',mg:'akaiky',type:'adv. lieu'},
+  {fr:'loin',mg:'lavitra',type:'adv. lieu'},
+]},
+// ── ADJECTIFS DE DESCRIPTION PHYSIQUE (12 mots) ──
+{key:'adj1',name:'Physiques',sub:'Grand, petit… · 12 mots',icon:'👤',words:[
+  {fr:'grand(e)',mg:'lehibe / avo',type:'adjectif'},
+  {fr:'petit(e)',mg:'kely',type:'adjectif'},
+  {fr:'gros(se)',mg:'matavy / mavesatra',type:'adjectif'},
+  {fr:'mince',mg:'maivana / kely vatana',type:'adjectif'},
+  {fr:'beau / belle',mg:'tsara / mahafinaritra',type:'adjectif'},
+  {fr:'laid(e)',mg:'ratsy / maharikoriko',type:'adjectif'},
+  {fr:'fort(e)',mg:'matanjaka / mahery',type:'adjectif'},
+  {fr:'faible',mg:'osa / malemy',type:'adjectif'},
+  {fr:'vieux / vieille',mg:'antitra / efa antitra',type:'adjectif'},
+  {fr:'jeune',mg:'tanora',type:'adjectif'},
+  {fr:'grand',mg:'lehibe / avo',type:'adjectif'},
+  {fr:'court(e)',mg:'fohy',type:'adjectif'},
+]},
+// ── ADJECTIFS DE CARACTÈRE (12 mots) ──
+{key:'adj2',name:'Caractère',sub:'Courageux, gentil… · 12 mots',icon:'😊',words:[
+  {fr:'courageux / courageuse',mg:'sahy / herim-po',type:'adjectif'},
+  {fr:'gentil(le)',mg:'tsara fanahy / malemy fanahy',type:'adjectif'},
+  {fr:'méchant(e)',mg:'ratsy fanahy / masiaka',type:'adjectif'},
+  {fr:'intelligent(e)',mg:'hendry / malisto',type:'adjectif'},
+  {fr:'travailleur / travailleuse',mg:'mazoto / tia miasa',type:'adjectif'},
+  {fr:'paresseux / paresseuse',mg:'kamo',type:'adjectif'},
+  {fr:'patient(e)',mg:'maharitra / somary matonina',type:'adjectif'},
+  {fr:'impatient(e)',mg:'tsy maharitra / maika',type:'adjectif'},
+  {fr:'heureux / heureuse',mg:'sambatra / faly',type:'adjectif'},
+  {fr:'triste',mg:'malahelo / andevony',type:'adjectif'},
+  {fr:'timide',mg:'henatra / matahotra',type:'adjectif'},
+  {fr:'bavard(e)',mg:'teny be / tia miresaka',type:'adjectif'},
+]},
+// ── ADJECTIFS DE QUALITÉ (12 mots) ──
+{key:'adj3',name:'Qualité',sub:'Bon, mauvais… · 12 mots',icon:'⭐',words:[
+  {fr:'bon(ne)',mg:'tsara / mahatsara',type:'adjectif'},
+  {fr:'mauvais(e)',mg:'ratsy / tsy tsara',type:'adjectif'},
+  {fr:'nouveau / nouvelle',mg:'vaovao',type:'adjectif'},
+  {fr:'vieux / vieille',mg:'antitra / efa ela',type:'adjectif'},
+  {fr:'chaud(e)',mg:'mafana',type:'adjectif'},
+  {fr:'froid(e)',mg:'mangatsiaka / mangataka',type:'adjectif'},
+  {fr:'propre',mg:'madio / tsara',type:'adjectif'},
+  {fr:'sale',mg:'maloto',type:'adjectif'},
+  {fr:'facile',mg:'mora / tsotra',type:'adjectif'},
+  {fr:'difficile',mg:'sarotra',type:'adjectif'},
+  {fr:'important(e)',mg:'manan-danja / lehibe',type:'adjectif'},
+  {fr:'inutile',mg:'tsy ilaina / tsy misy soa',type:'adjectif'},
+]},
+// ── ADJECTIFS DE QUANTITÉ/TAILLE (12 mots) ──
+{key:'adj4',name:'Divers',sub:'Rapide, magnifique… · 12 mots',icon:'🌟',words:[
+  {fr:'rapide',mg:'haingana / faingana',type:'adjectif'},
+  {fr:'lent(e)',mg:'moramora / tsindrin-dàlana',type:'adjectif'},
+  {fr:'magnifique',mg:'tsara tarehy / mahafinaritra',type:'adjectif'},
+  {fr:'affreux / affreuse',mg:'maharikoriko / ratsy',type:'adjectif'},
+  {fr:'riche',mg:'manankarena / mpanankarena',type:'adjectif'},
+  {fr:'pauvre',mg:'mahantra / malahelo',type:'adjectif'},
+  {fr:'plein(e)',mg:'feno / voeno',type:'adjectif'},
+  {fr:'vide',mg:'foana / tsy misy',type:'adjectif'},
+  {fr:'long(ue)',mg:'lava',type:'adjectif'},
+  {fr:'court(e)',mg:'fohy / haingana',type:'adjectif'},
+  {fr:'lourd(e)',mg:'mavesatra',type:'adjectif'},
+  {fr:'léger / légère',mg:'maivana',type:'adjectif'},
+]},
+// ── VERBES GROUPE 1 SUPPLÉMENTAIRES ──
+{key:'v1c',name:'Part C',sub:'Verbes essentiels -ER · 16 mots',icon:'1️⃣',words:[
+  {fr:'manger',mg:'mihinana',type:'verbe -ER'},
+  {fr:'habiter',mg:'monina / mitoetoetra',type:'verbe -ER'},
+  {fr:'marcher',mg:'mandeha an-tongotra',type:'verbe -ER'},
+  {fr:'porter',mg:'mitondra / mitafy',type:'verbe -ER'},
+  {fr:'fermer',mg:'manidy',type:'verbe -ER'},
+  {fr:'oublier',mg:'manadino',type:'verbe -ER'},
+  {fr:'demander',mg:'mangataka / manontany',type:'verbe -ER'},
+  {fr:'montrer',mg:'mampiseho',type:'verbe -ER'},
+  {fr:'utiliser',mg:'mampiasa',type:'verbe -ER'},
+  {fr:'voyager',mg:'mandaitra / manao safara',type:'verbe -ER'},
+  {fr:'cuisiner',mg:'manao sakafo',type:'verbe -ER'},
+  {fr:'jouer',mg:'milalao',type:'verbe -ER'},
+  {fr:'pleurer',mg:'mitomany',type:'verbe -ER'},
+  {fr:'commencer',mg:'manomboka',type:'verbe -ER'},
+  {fr:'continuer',mg:'mitohy / maharitra',type:'verbe -ER'},
+  {fr:'payer',mg:'mandoa / mandefa vola',type:'verbe -ER'},
+]},
+// ── VERBES GROUPE 3 SUPPLÉMENTAIRES ──
+{key:'v3c',name:'Part C',sub:'Irréguliers essentiels · 14 mots',icon:'3️⃣',words:[
+  {fr:'savoir',mg:'mahalala / mahay',type:'verbe irr.'},
+  {fr:'connaître',mg:'mahalala / mahafantatra',type:'verbe irr.'},
+  {fr:'suivre',mg:'manaraka',type:'verbe irr.'},
+  {fr:'vivre',mg:'miaina / velona',type:'verbe irr.'},
+  {fr:'recevoir',mg:'mandray / mahazo',type:'verbe irr.'},
+  {fr:'tenir',mg:'mitana / mihazona',type:'verbe irr.'},
+  {fr:'conduire',mg:'mampitohy / manampy',type:'verbe irr.'},
+  {fr:'sentir',mg:'mahatsapa / manitra',type:'verbe irr.'},
+  {fr:'dormir',mg:'matory',type:'verbe irr.'},
+  {fr:'rire',mg:'mihomehy',type:'verbe irr.'},
+  {fr:'naître',mg:'teraka',type:'verbe irr.'},
+  {fr:'mourir',mg:'maty',type:'verbe irr.'},
+  {fr:'servir',mg:'manompo / manampy',type:'verbe irr.'},
+  {fr:'plaire',mg:'mahafinaritra / sitraka',type:'verbe irr.'},
+]},
+// ── ADVERBES DE QUANTITÉ ──
+{key:'adv5',name:'De quantité',sub:'Très, trop, peu… · 14 mots',icon:'📊',words:[
+  {fr:'très',mg:'be dia be / tokoa',type:'adv. quantité'},
+  {fr:'trop',mg:'loatra / be loatra',type:'adv. quantité'},
+  {fr:'assez',mg:'ampy / efa ampy',type:'adv. quantité'},
+  {fr:'peu',mg:'kely / vitsy',type:'adv. quantité'},
+  {fr:'beaucoup',mg:'be / betsaka',type:'adv. quantité'},
+  {fr:'encore',mg:'mbola / indray',type:'adv. quantité'},
+  {fr:'presque',mg:'saika / efa ho',type:'adv. quantité'},
+  {fr:'surtout',mg:'indrindra / indrindra fa',type:'adv. quantité'},
+  {fr:'aussi',mg:'koa / ihany koa',type:'adv. addition'},
+  {fr:'déjà',mg:'efa / sahady',type:'adv. addition'},
+  {fr:'seulement',mg:'fotsiny / ihany',type:'adv. restriction'},
+  {fr:'peut-être',mg:'angamba / mety ho',type:'adv. doute'},
+  {fr:'probablement',mg:'mety ho / angamba',type:'adv. doute'},
+  {fr:'certainement',mg:'tokoa / tsy misy fisalasalana',type:'adv. doute'},
+]},
+// ── ADVERBES DE LIEU SUPPLÉMENTAIRES ──
+{key:'adv6',name:'De lieu avancé',sub:'Devant, derrière… · 14 mots',icon:'🗺️',words:[
+  {fr:'devant',mg:"eo anoloan'ny / aloha",type:'adv. lieu'},
+  {fr:'derrière',mg:"eo ivohon'ny / aorian'ny",type:'adv. lieu'},
+  {fr:'à côté',mg:"eo akaikin'ny / eo anilan'ny",type:'adv. lieu'},
+  {fr:'en face',mg:"eo anatrehan'ny",type:'adv. lieu'},
+  {fr:'entre',mg:"eo anelanelan'ny",type:'adv. lieu'},
+  {fr:'autour',mg:'manodidina',type:'adv. lieu'},
+  {fr:'au milieu',mg:'eo afovoany',type:'adv. lieu'},
+  {fr:'au fond',mg:'eo ambany indrindra',type:'adv. lieu'},
+  {fr:'à droite',mg:"eo ankavanan'ny",type:'adv. lieu'},
+  {fr:'à gauche',mg:"eo ankavian'ny",type:'adv. lieu'},
+  {fr:'en dessous',mg:'eo ambany',type:'adv. lieu'},
+  {fr:'au-dessus',mg:'eo ambony',type:'adv. lieu'},
+  {fr:'partout',mg:'manerana / hatraiza hatraiza',type:'adv. lieu'},
+  {fr:'quelque part',mg:'any amintsasany toerana',type:'adv. lieu'},
+]},
+// ── ADJECTIFS DE LIEU ──
+{key:'adj5',name:'De lieu',sub:'Proche, lointain… · 12 mots',icon:'📍',words:[
+  {fr:'proche',mg:'akaiky / tsy lavitra',type:'adjectif lieu'},
+  {fr:'lointain(e)',mg:'lavitra / tsy akaiky',type:'adjectif lieu'},
+  {fr:'intérieur(e)',mg:'anatiny / ao anaty',type:'adjectif lieu'},
+  {fr:'extérieur(e)',mg:'ivelany / eny ivelany',type:'adjectif lieu'},
+  {fr:'central(e)',mg:"afovoany / afovoan'ny",type:'adjectif lieu'},
+  {fr:'local(e)',mg:'eto an-toerana',type:'adjectif lieu'},
+  {fr:'voisin(e)',mg:'mpiara-monina / akaiky',type:'adjectif lieu'},
+  {fr:'prochain(e)',mg:'ho avy / manaraka',type:'adjectif lieu'},
+  {fr:'dernier / dernière',mg:'farany / lasa',type:'adjectif lieu'},
+  {fr:'premier / première',mg:'voalohany',type:'adjectif lieu'},
+  {fr:'suivant(e)',mg:'manaraka / aorian\'ny',type:'adjectif lieu'},
+  {fr:'urbain(e)',mg:"an-tanàna / an-drenivohitra",type:'adjectif lieu'},
+]},
+// ── ADJECTIFS D'ÉMOTION ──
+{key:'adj6',name:"Adjectifs d'émotion",sub:'Content, fatigué… · 12 mots',icon:'😊',words:[
+  {fr:'content(e)',mg:'faly / ravoravo',type:'adjectif émotion'},
+  {fr:'en colère',mg:'tezitra / tafintohina',type:'adjectif émotion'},
+  {fr:'surpris(e)',mg:'gaga / taitra',type:'adjectif émotion'},
+  {fr:'fatigué(e)',mg:'reraka / tsy manan-kery',type:'adjectif émotion'},
+  {fr:'malade',mg:'marary',type:'adjectif émotion'},
+  {fr:'inquiet / inquiète',mg:'mitoloko / manahy',type:'adjectif émotion'},
+  {fr:'fier / fière',mg:'mirehareha / misandratra',type:'adjectif émotion'},
+  {fr:'jaloux / jalouse',mg:'fialofana / miaro tena',type:'adjectif émotion'},
+  {fr:'déçu(e)',mg:'andevony / kivy',type:'adjectif émotion'},
+  {fr:'ennuyé(e)',mg:'ambina / tsy misy zavatra atao',type:'adjectif émotion'},
+  {fr:'stressé(e)',mg:'manahy / sahiran-tsaina',type:'adjectif émotion'},
+  {fr:'soulagé(e)',mg:'miala ahiahy / miadana',type:'adjectif émotion'},
+]},
+];
+// ── MODES MÉLANGÉ ──
+const MX_SECTIONS = [
+  {key:'mx1',name:'Présent + Passé composé',sub:'10 questions mélangées',icon:'🔀'},
+  {key:'mx2',name:'Présent + Imparfait',sub:'10 questions mélangées',icon:'🔁'},
+  {key:'mx3',name:'Présent + Futur simple',sub:'10 questions mélangées',icon:'⏩'},
+  {key:'mx4',name:'Passé composé + Imparfait',sub:'10 questions mélangées',icon:'📅'},
+  {key:'mx5',name:'Passé composé + Futur',sub:'10 questions mélangées',icon:'🌙'},
+  {key:'mx6',name:'Imparfait + Futur',sub:'10 questions mélangées',icon:'🌅'},
+  {key:'mx7',name:'Présent + Passé + Imparfait',sub:'10 questions mélangées',icon:'🔃'},
+  {key:'mx8',name:'Présent + Passé + Futur',sub:'10 questions mélangées',icon:'⚡'},
+  {key:'mx9',name:'Passé + Imparfait + Futur',sub:'10 questions mélangées',icon:'🌊'},
+  {key:'mx10',name:'Tous les temps',sub:'10 questions variées',icon:'🎯'},
+];
+const TEXTES = [
+
+// ══════════════════════════════════════
+// 📖 PRÉSENT
+// ══════════════════════════════════════
+{key:'pres_tx1', cat:'present', name:'Texte 1 — Le marché du quartier', sub:'Présent · 14 blancs', icon:'🛒',
+ intro:'Tous les verbes sont au Présent. Conjugue chaque verbe correctement !',
+ blanks:[
+  {b:'Le samedi matin, le marché du quartier',inf:'ouvrir',ans:'ouvre',a:'très tôt.'},
+  {b:'Les commerçants',inf:'installer',ans:'installent',a:'leurs tables et les clients'},
+  {b:'',inf:'choisir',ans:'choisissent',a:'des fruits et des légumes frais.'},
+  {b:'Près de l\'entrée, une musicienne',inf:'jouer',ans:'joue',a:'de la guitare et les passants'},
+  {b:'',inf:'s\'arrêter',ans:'s\'arrêtent',a:'pour écouter.'},
+  {b:'Un enfant',inf:'remplir',ans:'remplit',a:'un panier pendant que sa mère'},
+  {b:'',inf:'discuter',ans:'discute',a:'avec le vendeur.'},
+  {b:'Au même moment, je',inf:'finir',ans:'finis',a:'mes courses et tu'},
+  {b:'',inf:'chercher',ans:'cherches',a:'encore du pain.'},
+  {b:'Nous',inf:'se retrouver',ans:'nous retrouvons',a:'près de la fontaine et nous'},
+  {b:'',inf:'décider',ans:'décidons',a:'de rentrer ensemble.'},
+  {b:'Dans la rue principale, les voisins',inf:'se saluer',ans:'se saluent',a:'et échangent quelques mots.'},
+  {b:'À la maison, les enfants',inf:'aider',ans:'aident',a:'à préparer le déjeuner.'},
+  {b:'Après le repas, chacun',inf:'se reposer',ans:'se repose',a:'un peu et la maison redevient calme.'},
+]},
+
+{key:'pres_tx2', cat:'present', name:'Texte 2 — Le garage du samedi', sub:'Présent · 12 blancs', icon:'🔧',
+ intro:'Tous les verbes sont au Présent. Conjugue correctement !',
+ blanks:[
+  {b:'Chaque samedi, je',inf:'se lever',ans:'me lève',a:'tôt pour aller au garage.'},
+  {b:'Je',inf:'préparer',ans:'prépare',a:'mes outils et je'},
+  {b:'',inf:'vérifier',ans:'vérifie',a:'l\'état des moteurs.'},
+  {b:'Mon collègue et moi, nous',inf:'s\'occuper',ans:'nous occupons',a:'des clients qui'},
+  {b:'',inf:'chercher',ans:'cherchent',a:'des pièces détachées pour leurs motos.'},
+  {b:'Toi, tu',inf:'arriver',ans:'arrives',a:'souvent vers midi avec le journal sportif.'},
+  {b:'Est-ce que tu',inf:'se souvenir',ans:'te souviens',a:'du match de ce soir ?'},
+  {b:'Nous',inf:'devoir',ans:'devons',a:'finir le travail rapidement car nos amis'},
+  {b:'',inf:'organiser',ans:'organisent',a:'une soirée pour regarder la finale de football.'},
+  {b:'Pendant le match, les joueurs',inf:'courir',ans:'courent',a:'vite et ils se battent pour le ballon.'},
+  {b:'Nous',inf:'se passionner',ans:'nous passionnons',a:'pour chaque action !'},
+  {b:'Après le match, tout le monde',inf:'se coucher',ans:'se couche',a:'avec le sourire.'},
+]},
+
+// ══════════════════════════════════════
+// 📅 PRÉSENT + PASSÉ COMPOSÉ
+// ══════════════════════════════════════
+{key:'pc_tx1', cat:'pc', name:'Texte 1 — Le garage et le foot', sub:'Présent + Passé composé · 13 blancs', icon:'⚽',
+ intro:'Attention ! Regarde bien les adverbes de temps pour choisir entre Présent et Passé composé.',
+ blanks:[
+  {b:'Hier, mon patron',inf:'dire',ans:'a dit',a:'que je travaillais très bien.'},
+  {b:'Nous',inf:'recevoir',ans:'avons reçu',a:'une moto plus puissante.'},
+  {b:'Je',inf:'s\'occuper',ans:'me suis occupé',a:'de changer les pneus pendant toute la matinée.'},
+  {b:'Aujourd\'hui, la situation',inf:'être',ans:'est',a:'différente.'},
+  {b:'En ce moment, nous',inf:'réparer',ans:'réparons',a:'le moteur d\'une vieille Yamaha.'},
+  {b:'Je',inf:'penser',ans:'pense',a:'que nous finirons ce travail avant ce soir.'},
+  {b:'Il y a deux jours, mes amis et moi',inf:'se réunir',ans:'nous sommes réunis',a:'pour regarder le match.'},
+  {b:'Je',inf:'croire',ans:'croyais',a:'que l\'arbitre avait fait une erreur sur le penalty.'},
+  {b:'Vous',inf:'dire',ans:'dites',a:'souvent que le football est plus stressant que la mécanique.'},
+  {b:'Maintenant, je',inf:'se préparer',ans:'me prépare',a:'pour la pause déjeuner.'},
+  {b:'J\'',inf:'espérer',ans:'espère',a:'que tu passes une bonne journée.'},
+  {b:'Est-ce que tu',inf:'vouloir',ans:'veux',a:'passer au garage pour voir le résultat ?'},
+  {b:'Je',inf:'être',ans:'suis',a:'d\'accord avec vous !'},
+]},
+
+{key:'pc_tx2', cat:'pc', name:'Texte 2 — Weekend moto et foot', sub:'Présent + Passé composé · 15 blancs', icon:'🏍️',
+ intro:'Regarde bien les indices de temps ! Présent ou Passé composé ?',
+ blanks:[
+  {b:'Le weekend dernier, il',inf:'faire',ans:'a fait',a:'très beau.'},
+  {b:'Mon ami Lucas',inf:'se lever',ans:'s\'est levé',a:'tôt pour travailler sur sa moto.'},
+  {b:'Il',inf:'ouvrir',ans:'a ouvert',a:'le capot et il'},
+  {b:'',inf:'nettoyer',ans:'a nettoyé',a:'le carburateur.'},
+  {b:'Il',inf:'réussir',ans:'a réussi',a:'à tout remonter avant midi.'},
+  {b:'D\'habitude, Lucas et moi',inf:'se retrouver',ans:'nous retrouvons',a:'au garage pour discuter technique.'},
+  {b:'Nous',inf:'aimer',ans:'aimons',a:'passer du temps ensemble car nous'},
+  {b:'',inf:'être',ans:'sommes',a:'passionnés de mécanique.'},
+  {b:'L\'après-midi, nous',inf:'aller',ans:'sommes allés',a:'au stade de la ville.'},
+  {b:'Mon équipe préférée',inf:'marquer',ans:'a marqué',a:'un but magnifique à la fin du match !'},
+  {b:'Nous',inf:'se réjouir',ans:'nous sommes réjouis',a:'tous ensemble dans les tribunes.'},
+  {b:'Aujourd\'hui, je',inf:'se sentir',ans:'me sens',a:'un peu fatigué.'},
+  {b:'En ce moment, je',inf:'se reposer',ans:'me repose',a:'sur mon canapé.'},
+  {b:'Est-ce que tu',inf:'voir',ans:'as vu',a:'le résumé du match à la télé hier ?'},
+  {b:'Maintenant, je',inf:'se préparer',ans:'me prépare',a:'un café.'},
+]},
+
+{key:'pc_tx3', cat:'pc', name:'Texte 3 — Au restaurant', sub:'Présent + Passé composé · 15 blancs', icon:'🍕',
+ intro:'Présent ou Passé composé ? Les adverbes de temps sont tes indices !',
+ blanks:[
+  {b:'Samedi soir, ma famille et moi',inf:'décider',ans:'avons décidé',a:'d\'aller au restaurant.'},
+  {b:'Nous',inf:'choisir',ans:'avons choisi',a:'un petit endroit italien dans le centre-ville.'},
+  {b:'Quand nous',inf:'arriver',ans:'sommes arrivés',a:', le serveur se présenta avec le sourire.'},
+  {b:'D\'habitude, mon frère',inf:'prendre',ans:'prend',a:'toujours une pizza.'},
+  {b:'Mais ce soir-là, il',inf:'vouloir',ans:'a voulu',a:'goûter les pâtes fraîches.'},
+  {b:'Mes parents',inf:'partager',ans:'ont partagé',a:'une grande salade.'},
+  {b:'Nous',inf:'passer',ans:'avons passé',a:'un moment vraiment délicieux.'},
+  {b:'Aujourd\'hui, je',inf:'se souvenir',ans:'me souviens',a:'encore du goût du dessert !'},
+  {b:'En ce moment, je',inf:'écrire',ans:'écris',a:'la recette dans mon carnet.'},
+  {b:'Ma sœur',inf:'dire',ans:'dit',a:'souvent que je suis un vrai chef.'},
+  {b:'Maintenant, vous',inf:'se préparer',ans:'vous préparez',a:'pour sortir ?'},
+  {b:'Hier, les critiques',inf:'écrire',ans:'ont écrit',a:'un article très positif sur ce lieu.'},
+  {b:'En général, les gens',inf:'se réunir',ans:'se réunissent',a:'le weekend pour bien manger.'},
+  {b:'Est-ce que tu',inf:'finir',ans:'finis',a:'de lire la carte ?'},
+  {b:'Nous',inf:'devoir',ans:'devons',a:'commander avant la fermeture !'},
+]},
+
+{key:'pc_tx4', cat:'pc', name:'Texte 4 — Le garage (difficile)', sub:'Présent + Passé composé · 12 blancs', icon:'🔩',
+ intro:'Texte difficile ! Lis bien chaque phrase et choisis le bon temps.',
+ blanks:[
+  {b:'Hier soir, mes amis et moi',inf:'se réunir',ans:'nous sommes réunis',a:'pour discuter du programme.'},
+  {b:'Nous',inf:'décider',ans:'avons décidé',a:'de nous retrouver au garage tôt ce matin.'},
+  {b:'Aujourd\'hui, je',inf:'se lever',ans:'me lève',a:'à sept heures.'},
+  {b:'Quand j\'arrive, mon collègue',inf:'vérifier',ans:'vérifie',a:'déjà les outils.'},
+  {b:'Vous',inf:'arriver',ans:'êtes arrivés',a:'en avance pour nous aider.'},
+  {b:'Pendant la matinée, nous',inf:'réparer',ans:'avons réparé',a:'deux motos.'},
+  {b:'Vous',inf:'choisir',ans:'choisissez',a:'toujours les meilleures pièces.'},
+  {b:'En ce moment, je',inf:'se souvenir',ans:'me souviens',a:'de la panne de la semaine dernière.'},
+  {b:'Les joueurs de foot',inf:'se préparer',ans:'se préparent',a:'sur le terrain voisin.'},
+  {b:'Samedi dernier, le match',inf:'commencer',ans:'a commencé',a:'avec du retard.'},
+  {b:'Est-ce que tu',inf:'entendre',ans:'as entendu',a:'le score du match de mardi ?'},
+  {b:'Je',inf:'penser',ans:'pense',a:'que notre équipe a fait beaucoup d\'efforts.'},
+]},
+
+// ══════════════════════════════════════
+// 🌅 IMPARFAIT
+// ══════════════════════════════════════
+{key:'imp_tx1', cat:'imparfait', name:'Texte 1 — Souvenirs de garage', sub:'Imparfait · 15 blancs', icon:'🏍️',
+ intro:'Toutes les actions décrivent des habitudes ou situations passées. Conjugue à l\'Imparfait !',
+ blanks:[
+  {b:'Quand je',inf:'être',ans:'étais',a:'enfant, mon grand-père avait un grand garage.'},
+  {b:'Mon grand-père',inf:'avoir',ans:'avait',a:'un grand garage au fond du jardin.'},
+  {b:'Mon frère et moi, nous',inf:'passer',ans:'passions',a:'des heures avec lui.'},
+  {b:'Le grand-père',inf:'réparer',ans:'réparait',a:'de vieilles motos.'},
+  {b:'Pendant qu\'il',inf:'travailler',ans:'travaillait',a:', nous nettoyions les outils.'},
+  {b:'Nous',inf:'nettoyer',ans:'nettoyions',a:'les outils et nous'},
+  {b:'',inf:'ranger',ans:'rangions',a:'les pièces de rechange sur les étagères.'},
+  {b:'Les clients',inf:'arriver',ans:'arrivaient',a:'souvent pour boire un café.'},
+  {b:'L\'après-midi, mes amis et moi, nous',inf:'se réunir',ans:'nous réunissions',a:'dans la cour pour jouer au football.'},
+  {b:'Nous',inf:'courir',ans:'courions',a:'partout et nous'},
+  {b:'',inf:'finir',ans:'finissions',a:'la journée complètement fatigués.'},
+  {b:'Parfois, le ciel',inf:'noircir',ans:'noircissait',a:'avant l\'orage.'},
+  {b:'Le patron du garage',inf:'prendre',ans:'prenait',a:'toujours le temps de nous expliquer la mécanique.'},
+  {b:'Tu',inf:'aimer',ans:'aimais',a:'beaucoup cette période toi aussi.'},
+  {b:'C\'',inf:'être',ans:'était',a:'la belle vie !'},
+]},
+
+{key:'imp_tx2', cat:'imparfait', name:'Texte 2 — Sauveteur à la plage', sub:'Imparfait · 14 blancs', icon:'🏖️',
+ intro:'Toutes ces actions sont des habitudes ou descriptions passées. Imparfait !',
+ blanks:[
+  {b:'Pendant la saison d\'été, je',inf:'travailler',ans:'travaillais',a:'comme sauveteur.'},
+  {b:'Chaque matin, le soleil',inf:'briller',ans:'brillait',a:'déjà quand j\'arrivais sur la plage.'},
+  {b:'La mer',inf:'être',ans:'était',a:'calme et les premiers clients'},
+  {b:'',inf:'s\'installer',ans:'s\'installaient',a:'doucement sur les chaises longues.'},
+  {b:'Mon collègue et moi, nous',inf:'surveiller',ans:'surveillions',a:'la zone de baignade avec attention.'},
+  {b:'Nous',inf:'vérifier',ans:'vérifiions',a:'le matériel de secours et nous'},
+  {b:'',inf:'regarder',ans:'regardions',a:'les vagues.'},
+  {b:'Parfois, des enfants',inf:'courir',ans:'couraient',a:'près du bord et nous'},
+  {b:'',inf:'devoir',ans:'devions',a:'leur demander de faire attention.'},
+  {b:'Vers midi, les touristes',inf:'choisir',ans:'choisissaient',a:'de bons plats au restaurant.'},
+  {b:'Vous',inf:'accueillir',ans:'accueilliez',a:'les visiteurs avec le sourire.'},
+  {b:'À la fin de la journée, la plage',inf:'se vider',ans:'se vidait',a:'petit à petit.'},
+  {b:'Le ciel',inf:'pâlir',ans:'pâlissait',a:'et le vent'},
+  {b:'',inf:'rafraîchir',ans:'rafraîchissait',a:'l\'air. J\'adorais cette ambiance de vacances.'},
+]},
+
+{key:'imp_tx3', cat:'imparfait', name:'Texte 3 — Vacances chez le cousin', sub:'Imparfait · 12 blancs', icon:'☀️',
+ intro:'Toutes les actions sont à l\'Imparfait. Décris ces souvenirs d\'enfance !',
+ blanks:[
+  {b:'Quand j\'',inf:'avoir',ans:'avais',a:'douze ans, je passais mes vacances chez mon cousin.'},
+  {b:'C\'',inf:'être',ans:'était',a:'un bel été.'},
+  {b:'Chaque matin, le soleil',inf:'briller',ans:'brillait',a:'dans le ciel.'},
+  {b:'Mon cousin',inf:'aimer',ans:'aimait',a:'beaucoup la mécanique.'},
+  {b:'Il',inf:'posséder',ans:'possédait',a:'une petite moto rouge.'},
+  {b:'Ensemble, nous',inf:'nettoyer',ans:'nettoyions',a:'le moteur et nous'},
+  {b:'',inf:'ranger',ans:'rangions',a:'les outils dans le garage.'},
+  {b:'L\'après-midi, nous',inf:'jouer',ans:'jouions',a:'au football avec les voisins.'},
+  {b:'Le terrain',inf:'être',ans:'était',a:'grand.'},
+  {b:'Nous',inf:'courir',ans:'courions',a:'pendant des heures pour marquer des buts.'},
+  {b:'Parfois, nos parents',inf:'regarder',ans:'regardaient',a:'le match et ils'},
+  {b:'',inf:'partager',ans:'partageaient',a:'un gâteau avec nous. Nous étions vraiment heureux.'},
+]},
+
+// ══════════════════════════════════════
+// 🏆 TRÈS DIFFICILE (mélange tous temps)
+// ══════════════════════════════════════
+{key:'diff_tx1', cat:'difficile', name:'Texte 1 — Le garage (très difficile)', sub:'Présent + Passé composé · 14 blancs', icon:'🔥',
+ intro:'Texte très difficile ! Pas d\'indication de temps. Lis bien chaque phrase et devine !',
+ blanks:[
+  {b:'Le client',inf:'arriver',ans:'est arrivé',a:'au garage avec une moto qui faisait un bruit étrange.'},
+  {b:'Je',inf:'poser',ans:'ai posé',a:'des outils sur mon établi et je'},
+  {b:'',inf:'commencer',ans:'ai commencé',a:'l\'inspection.'},
+  {b:'Généralement, je',inf:'savoir',ans:'sais',a:'rapidement d\'où vient le problème.'},
+  {b:'Mon collègue et moi, nous',inf:'démonter',ans:'avons démonté',a:'le moteur pour voir l\'intérieur.'},
+  {b:'Nous',inf:'découvrir',ans:'avons découvert',a:'une pièce cassée.'},
+  {b:'Maintenant, nous',inf:'attendre',ans:'attendons',a:'la pièce de rechange.'},
+  {b:'Mes amis et moi',inf:'se réunir',ans:'nous réunissons',a:'dans le bureau pour prendre un café.'},
+  {b:'Nous',inf:'discuter',ans:'discutons',a:'souvent de mécanique.'},
+  {b:'Tu',inf:'voir',ans:'vois',a:'la nouvelle moto dans la vitrine ?'},
+  {b:'Elle',inf:'être',ans:'est',a:'magnifique.'},
+  {b:'Le patron',inf:'dire',ans:'a dit',a:'qu\'elle est déjà vendue.'},
+  {b:'Je',inf:'se préparer',ans:'me prépare',a:'à finir ma journée car je suis fatigué.'},
+  {b:'Nous',inf:'découvrir',ans:'avons découvert',a:'une belle journée malgré tout !'},
+]},
+
+];
+
+// ── ARTICLES ──
+const ARTICLES_SECTIONS = [
+{key:"art1", name:"Articles définis", sub:"le, la, les, l'", icon:"📌", questions:[
+  {sentence:"___ chat dort sur le canapé.", answer:"Le", opts:["Le","La","Les","L'"], expl:"Chat est masculin singulier → Le.", gloss:[{fr:"le",type:"article défini masc.",mg:"ny (masculin)"},{fr:"chat",type:"nom",mg:"saka"}]},
+  {sentence:"___ voiture de Brave est rouge.", answer:"La", opts:["Le","La","Les","L'"], expl:"Voiture est féminin singulier → La.", perso:true, gloss:[{fr:"la",type:"article défini fém.",mg:"ny (féminin)"},{fr:"voiture",type:"nom",mg:"fiara"}]},
+  {sentence:"___ enfants jouent dans la cour.", answer:"Les", opts:["Le","La","Les","L'"], expl:"Enfants est pluriel → Les.", gloss:[{fr:"les",type:"article défini pluriel",mg:"ny (pluriel)"},{fr:"enfants",type:"nom",mg:"ankizy"}]},
+  {sentence:"___ école de Jo est grande.", answer:"L'", opts:["Le","La","Les","L'"], expl:"École commence par une voyelle → L'.", perso:true, gloss:[{fr:"l'",type:"article élision",mg:"ny (devant voyelle)"},{fr:"école",type:"nom",mg:"sekoly"}]},
+  {sentence:"Brave répare ___ moteur de la moto.", answer:"le", opts:["le","la","les","l'"], expl:"Moteur est masculin singulier → le.", perso:true, gloss:[{fr:"moteur",type:"nom",mg:"motera"}]},
+  {sentence:"___ pièces de rechange sont chères.", answer:"Les", opts:["Le","La","Les","L'"], expl:"Pièces est pluriel → Les.", perso:true, gloss:[{fr:"les",type:"article pluriel",mg:"ny (pluriel)"},{fr:"chères",type:"adj.",mg:"lafo"}]},
+  {sentence:"Rabe range ___ outils dans la boîte.", answer:"les", opts:["le","la","les","l'"], expl:"Outils est pluriel → les.", perso:true, gloss:[{fr:"outils",type:"nom",mg:"fitaovana"}]},
+  {sentence:"___ eau bout à 100 degrés.", answer:"L'", opts:["Le","La","Les","L'"], expl:"Eau commence par une voyelle → L'.", gloss:[{fr:"l'",type:"article élision",mg:"ny (devant voyelle)"},{fr:"eau",type:"nom",mg:"rano"}]},
+  {sentence:"Jo aime ___ football.", answer:"le", opts:["le","la","les","l'"], expl:"Football est masculin singulier → le.", perso:true, gloss:[{fr:"football",type:"nom",mg:"baolina kitra"}]},
+  {sentence:"___ moto de Brave est rapide.", answer:"La", opts:["Le","La","Les","L'"], expl:"Moto est féminin singulier → La.", perso:true, gloss:[{fr:"moto",type:"nom",mg:"moto / motosyklety"}]},
+]},
+{key:"art2", name:"Articles indéfinis", sub:"un, une, des, du", icon:"📎", questions:[
+  {sentence:"Brave a ___ magasin de moto.", answer:"un", opts:["un","une","des","du"], expl:"Magasin est masculin singulier → un.", perso:true, gloss:[{fr:"un",type:"article indéfini masc.",mg:"iray (masculin)"},{fr:"magasin",type:"nom",mg:"fivarotana"}]},
+  {sentence:"Mama Jo prépare ___ bonne soupe.", answer:"une", opts:["un","une","des","du"], expl:"Soupe est féminin singulier → une.", perso:true, gloss:[{fr:"une",type:"article indéfini fém.",mg:"iray (féminin)"},{fr:"soupe",type:"nom",mg:"lasopy"}]},
+  {sentence:"Il y a ___ clients dans le garage.", answer:"des", opts:["un","une","des","du"], expl:"Clients est pluriel → des.", gloss:[{fr:"des",type:"article pluriel",mg:"maro"},{fr:"clients",type:"nom",mg:"mpanjifa"}]},
+  {sentence:"Aaron mange ___ pain le matin.", answer:"du", opts:["un","une","des","du"], expl:"Pain est masculin partitif → du.", perso:true, gloss:[{fr:"du",type:"article partitif masc.",mg:"kely (partitif)"},{fr:"pain",type:"nom",mg:"mofo"}]},
+  {sentence:"Jo joue avec ___ ami.", answer:"un", opts:["un","une","des","du"], expl:"Ami est masculin singulier → un.", perso:true, gloss:[{fr:"ami",type:"nom",mg:"namana"}]},
+  {sentence:"Rabe répare ___ moto ce matin.", answer:"une", opts:["un","une","des","du"], expl:"Moto est féminin singulier → une.", perso:true, gloss:[{fr:"moto",type:"nom",mg:"moto"}]},
+  {sentence:"Brave commande ___ pièces de rechange.", answer:"des", opts:["un","une","des","du"], expl:"Pièces est pluriel → des.", perso:true, gloss:[{fr:"des",type:"article pluriel",mg:"maro"},{fr:"pièces",type:"nom",mg:"piesa"}]},
+  {sentence:"Mama Jo boit ___ café chaque matin.", answer:"du", opts:["un","une","des","du"], expl:"Café est masculin partitif → du.", perso:true, gloss:[{fr:"du",type:"article partitif",mg:"kely (partitif)"},{fr:"café",type:"nom",mg:"kafe"}]},
+  {sentence:"Il y a ___ problème avec le moteur.", answer:"un", opts:["un","une","des","du"], expl:"Problème est masculin singulier → un.", gloss:[{fr:"problème",type:"nom",mg:"olana"},{fr:"moteur",type:"nom",mg:"motera"}]},
+  {sentence:"Aaron a ___ nouvelle moto rouge.", answer:"une", opts:["un","une","des","du"], expl:"Moto est féminin singulier → une.", perso:true, gloss:[{fr:"nouvelle",type:"adj.",mg:"vaovao"},{fr:"rouge",type:"adj.",mg:"mena"}]},
+]},
+];
+
+// ── FUTUR PROCHE ──
+const FUTUR_PROCHE_SECTIONS = [
+{key:"fp1", name:"Futur proche", sub:"aller + infinitif · 10 questions", icon:"⚡", questions:[
+  {verb:"manger", tense:"Futur proche", adv:"ce soir", sentence:"ce soir, Brave ___ (aller + manger) avec toute sa famille.", answer:"va manger", opts:["va manger","vais manger","vont manger","vas manger"], expl:"Ce soir = futur proche. Brave = il → va manger.", perso:true, gloss:[{fr:"ce soir",type:"adv.",mg:"androany hariva"},{fr:"aller + infinitif",type:"futur proche",mg:"hanao zavatra bientôt"}]},
+  {verb:"partir", tense:"Futur proche", adv:"dans cinq minutes", sentence:"dans cinq minutes, je ___ (aller + partir) au garage.", answer:"vais partir", opts:["vais partir","va partir","allons partir","allez partir"], expl:"Dans cinq minutes = futur immédiat. Je → vais partir.", perso:true, gloss:[{fr:"dans cinq minutes",type:"adv.",mg:"dimy minitra any aoriana"},{fr:"partir",type:"verbe",mg:"handeha / hiala"}]},
+  {verb:"réparer", tense:"Futur proche", adv:"bientôt", sentence:"bientôt, Rabe et Brave ___ (aller + réparer) cette moto.", answer:"vont réparer", opts:["vont réparer","vais réparer","va réparer","allez réparer"], expl:"Rabe et Brave = ils → vont réparer.", perso:true, gloss:[{fr:"bientôt",type:"adv.",mg:"tsy ho ela"},{fr:"réparer",type:"verbe",mg:"hanamaboatra"}]},
+  {verb:"jouer", tense:"Futur proche", adv:"samedi prochain", sentence:"samedi prochain, Jo et Aaron ___ (aller + jouer) au foot.", answer:"vont jouer", opts:["vont jouer","vas jouer","allez jouer","vais jouer"], expl:"Jo et Aaron = ils → vont jouer.", perso:true, gloss:[{fr:"samedi prochain",type:"adv.",mg:"ny Sabotsy ho avy"},{fr:"jouer",type:"verbe",mg:"hilalao"}]},
+  {verb:"acheter", tense:"Futur proche", adv:"demain", sentence:"demain, tu ___ (aller + acheter) des pièces au marché.", answer:"vas acheter", opts:["vas acheter","va acheter","vont acheter","vais acheter"], expl:"Demain = futur proche. Tu → vas acheter.", gloss:[{fr:"demain",type:"adv.",mg:"rahampitso"},{fr:"acheter",type:"verbe",mg:"hividy"}]},
+  {verb:"finir", tense:"Futur proche", adv:"tout à l'heure", sentence:"tout à l'heure, nous ___ (aller + finir) ce travail.", answer:"allons finir", opts:["allons finir","vont finir","vas finir","vais finir"], expl:"Nous → allons finir.", gloss:[{fr:"tout à l'heure",type:"adv.",mg:"tsy ho ela"},{fr:"finir",type:"verbe",mg:"hahavita"}]},
+  {verb:"préparer", tense:"Futur proche", adv:"ce soir", sentence:"ce soir, Mama Jo ___ (aller + préparer) un bon repas.", answer:"va préparer", opts:["va préparer","vais préparer","vont préparer","vas préparer"], expl:"Mama Jo = elle → va préparer.", perso:true, gloss:[{fr:"ce soir",type:"adv.",mg:"androany hariva"},{fr:"préparer",type:"verbe",mg:"hanomana"}]},
+  {verb:"ouvrir", tense:"Futur proche", adv:"dans un mois", sentence:"dans un mois, Brave ___ (aller + ouvrir) un deuxième magasin.", answer:"va ouvrir", opts:["va ouvrir","vais ouvrir","vont ouvrir","vas ouvrir"], expl:"Dans un mois = futur proche. Brave = il → va ouvrir.", perso:true, gloss:[{fr:"dans un mois",type:"adv.",mg:"iray volana any aoriana"},{fr:"ouvrir",type:"verbe",mg:"hanokatra"}]},
+  {verb:"pleuvoir", tense:"Futur proche", adv:"bientôt", sentence:"regarde les nuages ! Il ___ (aller + pleuvoir) bientôt.", answer:"va pleuvoir", opts:["va pleuvoir","vais pleuvoir","vont pleuvoir","vas pleuvoir"], expl:"Il (sujet impersonnel) → va pleuvoir.", gloss:[{fr:"pleuvoir",type:"verbe irr.",mg:"hisy orana"},{fr:"nuages",type:"nom",mg:"rahona"}]},
+  {verb:"se coucher", tense:"Futur proche", adv:"dans dix minutes", sentence:"dans dix minutes, les enfants ___ (aller + se coucher).", answer:"vont se coucher", opts:["vont se coucher","vais me coucher","va se coucher","allez vous coucher"], expl:"Les enfants = ils → vont se coucher.", perso:true, gloss:[{fr:"dans dix minutes",type:"adv.",mg:"folo minitra any aoriana"},{fr:"se coucher",type:"verbe pron.",mg:"handry / hanatory"}]},
+]},
+];
+
+// ── PHRASES NÉGATIVES ──
+const NEGATION_SECTIONS = [
+{key:"neg1", name:"Ne...pas", sub:"Négation simple · 10 questions", icon:"❌", questions:[
+  {sentence:"Brave ___ travaille ___ le dimanche.", answer:"ne / pas", opts:["ne / pas","n'/ pas","ne / plus","ne / jamais"], expl:"Négation simple : ne...pas. Brave ne travaille pas.", perso:true, gloss:[{fr:"ne...pas",type:"négation",mg:"tsy... (négation simple)"},{fr:"dimanche",type:"nom",mg:"Alahady"}]},
+  {sentence:"Jo ___ aime ___ les légumes.", answer:"n'/ pas", opts:["ne / pas","n'/ pas","ne / plus","ne / jamais"], expl:"Aime commence par une voyelle → n'aime pas.", perso:true, gloss:[{fr:"n'...pas",type:"négation élision",mg:"tsy... (devant voyelle)"},{fr:"légumes",type:"nom",mg:"anana / legioma"}]},
+  {sentence:"Nous ___ avons ___ de pièces en stock.", answer:"n'/ pas", opts:["ne / pas","n'/ pas","ne / plus","ne / jamais"], expl:"Avons commence par une voyelle → n'avons pas.", gloss:[{fr:"n'...pas",type:"négation",mg:"tsy misy"},{fr:"en stock",type:"expr.",mg:"ao amin'ny stock"}]},
+  {sentence:"Rabe ___ arrive ___ en retard.", answer:"n'/ pas", opts:["ne / pas","n'/ pas","ne / plus","ne / jamais"], expl:"N'arrive pas = négation de arriver.", perso:true, gloss:[{fr:"n'...pas",type:"négation",mg:"tsy mba"},{fr:"en retard",type:"expr.",mg:"tara"}]},
+  {sentence:"Aaron ___ mange ___ de viande.", answer:"ne / pas", opts:["ne / pas","n'/ pas","ne / plus","ne / jamais"], expl:"Mange commence par une consonne → ne mange pas.", perso:true, gloss:[{fr:"ne...pas",type:"négation",mg:"tsy mihinana"},{fr:"viande",type:"nom",mg:"hena"}]},
+  {sentence:"Je ___ sais ___ réparer ce moteur.", answer:"ne / pas", opts:["ne / pas","n'/ pas","ne / plus","ne / jamais"], expl:"Ne sais pas = ne + verbe + pas.", gloss:[{fr:"ne...pas",type:"négation",mg:"tsy mahay"},{fr:"réparer",type:"verbe",mg:"manamboatra"}]},
+  {sentence:"Nous ___ avons ___ fini le travail.", answer:"n'/ pas", opts:["ne / pas","n'/ pas","ne / plus","ne / jamais"], expl:"N'avons pas fini = négation au passé composé.", gloss:[{fr:"n'...pas",type:"négation P.C.",mg:"tsy mbola vita"}]},
+  {sentence:"Tu ___ dois ___ oublier tes outils.", answer:"ne / pas", opts:["ne / pas","n'/ pas","ne / plus","ne / jamais"], expl:"Ne dois pas = obligation négative.", gloss:[{fr:"ne...pas",type:"négation",mg:"tsy tokony"},{fr:"oublier",type:"verbe",mg:"manadino"}]},
+  {sentence:"Elle ___ comprend ___ cette règle.", answer:"ne / pas", opts:["ne / pas","n'/ pas","ne / plus","ne / jamais"], expl:"Ne comprend pas = négation simple.", gloss:[{fr:"ne...pas",type:"négation",mg:"tsy azony"},{fr:"règle",type:"nom",mg:"fitsipika"}]},
+  {sentence:"Vous ___ pouvez ___ entrer ici.", answer:"ne / pas", opts:["ne / pas","n'/ pas","ne / plus","ne / jamais"], expl:"Ne pouvez pas = impossibilité négative.", gloss:[{fr:"ne...pas",type:"négation",mg:"tsy afaka"},{fr:"entrer",type:"verbe",mg:"miditra"}]},
+]},
+{key:"neg2", name:"Ne...plus / Ne...jamais", sub:"Négations avancées · 10 questions", icon:"🚫", questions:[
+  {sentence:"Brave ___ fume ___.", answer:"ne / plus", opts:["ne / plus","n'/ plus","ne / jamais","ne / pas"], expl:"Ne...plus = arrêt d'une habitude. Il fumait avant, plus maintenant.", perso:true, gloss:[{fr:"ne...plus",type:"négation",mg:"tsy intsony"},{fr:"fumer",type:"verbe",mg:"mipisaka sigara"}]},
+  {sentence:"Jo ___ mange ___ de bonbons.", answer:"ne / plus", opts:["ne / plus","n'/ plus","ne / jamais","ne / pas"], expl:"Ne mange plus = il mangeait des bonbons avant, plus maintenant.", perso:true, gloss:[{fr:"ne...plus",type:"négation",mg:"tsy intsony"},{fr:"bonbons",type:"nom",mg:"bonbon / siramamy"}]},
+  {sentence:"Rabe ___ est ___ en retard.", answer:"n'/ plus", opts:["ne / plus","n'/ plus","ne / jamais","ne / pas"], expl:"N'est plus = élision devant voyelle.", perso:true, gloss:[{fr:"n'...plus",type:"négation élision",mg:"tsy intsony"},{fr:"en retard",type:"expr.",mg:"tara"}]},
+  {sentence:"Je ___ mange ___ de fast-food.", answer:"ne / jamais", opts:["ne / jamais","n'/ jamais","ne / plus","ne / pas"], expl:"Ne...jamais = pas une seule fois.", gloss:[{fr:"ne...jamais",type:"négation",mg:"tsy mba... na oviana na oviana"},{fr:"fast-food",type:"nom",mg:"sakafo haingana"}]},
+  {sentence:"Aaron ___ arrive ___ en retard à l'école.", answer:"n'/ jamais", opts:["ne / jamais","n'/ jamais","ne / plus","ne / pas"], expl:"N'arrive jamais = élision + jamais.", perso:true, gloss:[{fr:"n'...jamais",type:"négation",mg:"tsy mba tara na oviana na oviana"}]},
+  {sentence:"Nous ___ travaillons ___ le week-end.", answer:"ne / jamais", opts:["ne / jamais","n'/ jamais","ne / plus","ne / pas"], expl:"Ne travaillons jamais le week-end = habitude négative absolue.", gloss:[{fr:"ne...jamais",type:"négation",mg:"tsy mba miasa na oviana na oviana"}]},
+  {sentence:"Il ___ a ___ de problème avec cette moto.", answer:"n'/ plus", opts:["ne / plus","n'/ plus","ne / jamais","ne / pas"], expl:"N'a plus = plus de problème maintenant.", gloss:[{fr:"n'...plus",type:"négation",mg:"tsy misy intsony"},{fr:"problème",type:"nom",mg:"olana"}]},
+  {sentence:"Mama Jo ___ sort ___ seule le soir.", answer:"ne / jamais", opts:["ne / jamais","n'/ jamais","ne / plus","ne / pas"], expl:"Ne sort jamais = habitude négative absolue.", perso:true, gloss:[{fr:"ne...jamais",type:"négation",mg:"tsy mba mivoaka"},{fr:"seule",type:"adj.",mg:"irery"}]},
+  {sentence:"Brave ___ est ___ malade.", answer:"n'/ jamais", opts:["ne / jamais","n'/ jamais","ne / plus","ne / pas"], expl:"N'est jamais malade = jamais malade.", perso:true, gloss:[{fr:"n'...jamais",type:"négation",mg:"tsy marary na oviana na oviana"}]},
+  {sentence:"Tu ___ dois ___ recommencer cette erreur.", answer:"ne / plus", opts:["ne / plus","n'/ plus","ne / jamais","ne / pas"], expl:"Ne dois plus = arrêt d'une action.", gloss:[{fr:"ne...plus",type:"négation",mg:"tsy tokony intsony"},{fr:"erreur",type:"nom",mg:"fahadisoana"}]},
+]},
+];
+
+// Table de conjugaisons: verbe -> [présent, passé composé, imparfait, futur]
+const CONJ_TABLE = {
+  'ranger':    ['range','a rangé','rangeait','rangera'],
+  'réparer':   ['répare','a réparé','réparait','réparera'],
+  'chercher':  ['cherche','a cherché','cherchait','cherchera'],
+  'finir':     ['finit','a fini','finissait','finira'],
+  'bondir':    ['bondit','a bondi','bondissait','bondira'],
+  'prendre':   ['prend','a pris','prenait','prendra'],
+  'descendre': ['descend','a descendu','descendait','descendra'],
+  'dire':      ['dit','a dit','disait','dira'],
+  'noircir':   ['noircit','a noirci','noircissait','noircira'],
+  'se lever':  ['se lève','s\'est levé','se levait','se lèvera'],
+  's\'amuser': ['s\'amuse','s\'est amusé','s\'amusait','s\'amusera'],
+  's\'occuper':['s\'occupe','s\'est occupé','s\'occupait','s\'occupera'],
+  'vérifier':  ['vérifie','a vérifié','vérifiait','vérifiera'],
+  'boire':     ['boit','a bu','buvait','boira'],
+  'courir':    ['court','a couru','courait','courra'],
+  'étudier':   ['étudie','a étudié','étudiait','étudiera'],
+  'gonfler':   ['gonfle','a gonflé','gonflait','gonflera'],
+  'se regarder':['se regarde','s\'est regardé','se regardait','se regardera'],
+  'produire':  ['produit','a produit','produisait','produira'],
+  'réfléchir': ['réfléchit','a réfléchi','réfléchissait','réfléchira'],
+  's\'habiller':['s\'habille','s\'est habillé','s\'habillait','s\'habillera'],
+  'vendre':    ['vend','a vendu','vendait','vendra'],
+  'regarder':  ['regarde','a regardé','regardait','regardera'],
+  'laver':     ['lave','a lavé','lavait','lavera'],
+  'choisir':   ['choisit','a choisi','choisissait','choisira'],
+  'bâtir':     ['bâtit','a bâti','bâtissait','bâtira'],
+  'écrire':    ['écrit','a écrit','écrivait','écrira'],
+  'détruire':  ['détruit','a détruit','détruisait','détruira'],
+  'débattre':  ['débat','a débattu','débattait','débattra'],
+  'se baigner':['se baigne','s\'est baigné','se baignait','se baignera'],
+  'rentrer':   ['rentre','est rentré','rentrait','rentrera'],
+  'acheter':   ['achète','a acheté','achetait','achètera'],
+  'augmenter': ['augmente','a augmenté','augmentait','augmentera'],
+  'terminer':  ['termine','a terminé','terminait','terminera'],
+  'signer':    ['signe','a signé','signait','signera'],
+  'se réveiller':['se réveille','s\'est réveillé','se réveillait','se réveillera'],
+  'apprendre': ['apprend','a appris','apprenait','apprendra'],
+  'mettre':    ['met','a mis','mettait','mettra'],
+  'tomber':    ['tombe','est tombé','tombait','tombera'],
+  'réussir':   ['réussit','a réussi','réussissait','réussira'],
+  'parler':    ['parle','a parlé','parlait','parlera'],
+  'manger':    ['mange','a mangé','mangeait','mangera'],
+  'aller':     ['va','est allé','allait','ira'],
+  'faire':     ['fait','a fait','faisait','fera'],
+  'venir':     ['vient','est venu','venait','viendra'],
+  'partir':    ['part','est parti','partait','partira'],
+  'être':      ['est','a été','était','sera'],
+  'avoir':     ['a','a eu','avait','aura'],
+  'se coucher':['se couche','s\'est couché','se couchait','se couchera'],
+  'jouer':     ['joue','a joué','jouait','jouera'],
+  'se souvenir':['se souvient','s\'est souvenu','se souvenait','se souviendra'],
+  'ouvrir':    ['ouvre','a ouvert','ouvrait','ouvrira'],
+  'croire':    ['croit','a cru','croyait','croira'],
+  'voir':      ['voit','a vu','voyait','verra'],
+  'pouvoir':   ['peut','a pu','pouvait','pourra'],
+  'vouloir':   ['veut','a voulu','voulait','voudra'],
+  'se préparer':['se prépare','s\'est préparé','se préparait','se préparera'],
+  'se dépêcher':['se dépêche','s\'est dépêché','se dépêchait','se dépêchera'],
+  'rougir':    ['rougit','a rougi','rougissait','rougira'],
+  's\'appeler':['s\'appelle','s\'est appelé','s\'appelait','s\'appellera'],
+  'marquer':   ['marque','a marqué','marquait','marquera'],
+  'se réunir': ['se réunit','s\'est réuni','se réunissait','se réunira'],
+  'espérer':   ['espère','a espéré','espérait','espérera'],
+};
+
+// Indices des temps dans CONJ_TABLE
+// 0=présent, 1=passé composé, 2=imparfait, 3=futur
+const TENSE_IDX = {
+  'présent': 0,
+  'passé composé': 1,
+  'imparfait': 2,
+  'futur simple': 3,
+  'futur proche': 3,
+  'pron. – p. composé': 1,
+  'pron. – passé composé': 1,
+};
+
+
+// ================================================================
+// UTILITAIRES
+// ================================================================
+const norm=function(s){return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/['']/g,"'").replace(/\s+/g,' ');};
+const shuffle=function(a){return a.slice().sort(function(){return Math.random()-0.5;});};
+const $=function(id){return document.getElementById(id);};
+
+// GLOBAL SCORE
+let globalScore=0;
+function addGlobalScore(pts){
+  globalScore+=pts;
+  var el=$('global-score-val');
+  if(el) el.textContent=globalScore;
+}
+
+// TABS
+function showTab(id){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  $(id).classList.add('on');
+  var ids=['t-conjug','t-vocab','t-gram','t-mixte','t-texte'];
+  var idx=ids.indexOf(id);
+  document.querySelectorAll('.tab')[idx].classList.add('on');
+}
+
+// BUILD GRID
+function buildGrid(gridId,sections,cb){
+  var g=$(gridId);
+  if(!g) return;
+  sections.forEach(function(s,i){
+    var d=document.createElement('div');
+    d.className='sec-card'+(i===0?' sel':'');
+    d.innerHTML='<div class="sc-icon">'+s.icon+'</div><div class="sc-name">'+s.name+'</div><div class="sc-count">'+s.sub+'</div>';
+    d.onclick=function(){g.querySelectorAll('.sec-card').forEach(function(c){c.classList.remove('sel');});d.classList.add('sel');cb(i);};
+    g.appendChild(d);
+  });
+}
+
+// SHOW RESULTS
+function showResults(prefix,sc,tot,hist){
+  var pct=Math.round((sc/tot)*100);
+  var big=$(prefix+'-rb');
+  big.textContent=sc+'/'+tot;
+  big.className='res-big '+(pct>=75?'gr':pct>=50?'ok':'lw');
+  var msg,sub;
+  if(pct>=75){msg='🎉 Excellent Brave !';sub='Tu maîtrises très bien !';}
+  else if(pct>=50){msg='👍 Bien !';sub='Revois les erreurs et réessaie.';}
+  else{msg='💪 Continue !';sub='Lis les explications et recommence !';}
+  $(prefix+'-rm').textContent=msg;
+  $(prefix+'-rs').textContent=sub;
+  var rev=$(prefix+'-rv');
+  rev.innerHTML='<div style="font-weight:800;font-size:0.76rem;color:var(--muted);margin-bottom:9px;text-transform:uppercase;">Révision</div>';
+  hist.forEach(function(h,i){
+    var d=document.createElement('div');
+    d.className='rv '+(h.ok?'ok':'no');
+    d.innerHTML='<div class="rq">'+(i+1)+'. '+h.q+'</div><div class="ra">'+(h.ok?'<span class="ri">✅ '+h.user+'</span>':'<span class="rw">✗ '+h.user+'</span> → <span class="ri">✅ '+h.ans+'</span>')+'</div>';
+    rev.appendChild(d);
+  });
+  addGlobalScore(sc*10);
+}
+
+// ================================================================
+// CONJUGAISON
+// ================================================================
+var cjMode='write';
+var cjQs=[],cjIdx=0,cjSc=0,cjAns=false,cjHist=[];
+var selCJ=0;
+
+function setCJMode(m){
+  cjMode=m;
+  $('cj-mode-write').classList.toggle('on',m==='write');
+  $('cj-mode-qcm').classList.toggle('on',m==='qcm');
+}
+
+buildGrid('cj-grid',CJ_SECTIONS,function(i){selCJ=i;});
+
+function startCJ(){
+  cjQs=shuffle(CJ_SECTIONS[selCJ].questions);
+  cjIdx=0;cjSc=0;cjAns=false;cjHist=[];
+  $('cj-menu').style.display='none';$('cj-res').style.display='none';
+  $('cj-quiz').style.display='block';renderCJ();
+}
+
+function renderCJ(){
+  cjAns=false; stopMic();
+  var ms=$('cj-mst');if(ms){ms.textContent='';ms.className='mic-st';}
+  var q=cjQs[cjIdx],tot=cjQs.length;
+  $('cj-ct').textContent=(cjIdx+1)+'/'+tot;
+  $('cj-sc').textContent=cjSc;
+  $('cj-pb').style.width=Math.round((cjIdx/tot)*100)+'%';
+  $('cj-vb').textContent=q.verb;
+  $('cj-tb').textContent=q.tense;
+  var pp=$('cj-pp');if(pp)pp.style.display=q.perso?'inline-block':'none';
+  var html=q.sentence;
+  if(q.adv&&html.includes(q.adv))html=html.replace(q.adv,'<span class="adv">'+q.adv+'</span>');
+  html=html.replace(/\(([^)]+)\)/,'(<span class="vinf">$1</span>)');
+  $('cj-txt').innerHTML=html;
+  $('cj-corr').classList.remove('on');
+  $('cj-nxt').style.display='none';
+
+  if(cjMode==='write'){
+    $('cj-write-zone').style.display='block';
+    $('cj-qcm-zone').style.display='none';
+    var inp=$('cj-inp');inp.value='';inp.className='ans-inp';inp.disabled=false;
+    $('cj-val').disabled=false;
+    inp.focus();
+  } else {
+    $('cj-write-zone').style.display='none';
+    $('cj-qcm-zone').style.display='block';
+    var opts;
+    if(q.opts){
+      opts=shuffle(q.opts);
+    } else {
+      // Use CONJ_TABLE: same verb, different tenses
+      var verbKey=q.verb.toLowerCase();
+      var allForms=CONJ_TABLE[verbKey];
+      var wrongAnswers=[];
+      if(allForms){
+        // Get all 4 forms of this verb, remove the correct answer
+        wrongAnswers=allForms.filter(function(f){
+          return f.toLowerCase()!==q.answer.toLowerCase();
+        });
+        wrongAnswers=shuffle(wrongAnswers).slice(0,3);
+      }
+      // Fallback: use other answers from section if verb not in table
+      if(wrongAnswers.length<3){
+        var otherAnswers=cjQs.filter(function(_,qi){return qi!==cjIdx;}).map(function(qq){return qq.answer;});
+        var extras=shuffle(otherAnswers.filter(function(a){return a!==q.answer && wrongAnswers.indexOf(a)===-1;}));
+        wrongAnswers=wrongAnswers.concat(extras).slice(0,3);
+      }
+      opts=shuffle([q.answer].concat(wrongAnswers.slice(0,3)));
+    }
+    var div=$('cj-qcm-zone');div.innerHTML='';
+    opts.forEach(function(opt){
+      var btn=document.createElement('button');btn.className='opt';btn.textContent=opt;
+      btn.onclick=function(){checkCJQCM(btn,opt,q);};
+      div.appendChild(btn);
+    });
+  }
+}
+
+function checkCJQCM(btn,selected,q){
+  if(cjAns)return; cjAns=true;
+  var ok=norm(selected)===norm(q.answer);
+  if(ok)cjSc++;
+  cjHist.push({q:q.sentence,user:selected,ok:ok,ans:q.answer});
+  document.querySelectorAll('#cj-qcm-zone .opt').forEach(function(b){
+    b.disabled=true;
+    if(norm(b.textContent)===norm(q.answer))b.classList.add('ok');
+    else if(b===btn&&!ok)b.classList.add('no');
+  });
+  showCJCorr(ok,q,selected);
+}
+
+function checkCJ(){
+  if(cjAns)return;
+  var inp=$('cj-inp'),val=inp.value.trim();
+  if(!val){inp.focus();return;}
+  cjAns=true;
+  var q=cjQs[cjIdx];
+  var ok=q.answer.split('/').map(norm).includes(norm(val));
+  if(ok)cjSc++;
+  cjHist.push({q:q.sentence,user:val,ok:ok,ans:q.answer});
+  inp.className='ans-inp '+(ok?'ok':'no');inp.disabled=true;
+  $('cj-val').disabled=true;
+  showCJCorr(ok,q,val);
+}
+
+function showCJCorr(ok,q,userVal){
+  var ch=$('cj-ch');ch.className='corr-hd '+(ok?'ok':'no');
+  ch.innerHTML=ok?'✅ Bonne réponse !':'❌ Pas tout à fait...';
+  $('cj-ca').innerHTML=ok?'<strong>Parfait !</strong> → <strong style="color:#34d399">'+q.answer+'</strong>':'Ta réponse : <strong style="color:#fb7185">'+userVal+'</strong> → <strong style="color:#34d399">'+q.answer+'</strong>';
+  $('cj-cf').textContent=q.full||'';
+  $('cj-ce').textContent='📌 '+(q.expl||'');
+  $('cj-gl').innerHTML=(q.gloss||[]).map(function(g){return '<tr><td class="gfr">'+g.fr+'</td><td class="gtp">'+g.type+'</td><td class="gmg">🇲🇬 '+g.mg+'</td></tr>';}).join('');
+  $('cj-corr').classList.add('on');$('cj-sc').textContent=cjSc;
+  var nb=$('cj-nxt');nb.style.display='block';
+  nb.textContent=cjIdx<cjQs.length-1?'Suivant →':'Voir les résultats';
+}
+
+function nextCJ(){cjIdx++;if(cjIdx>=cjQs.length){$('cj-quiz').style.display='none';$('cj-res').style.display='block';showResults('cj',cjSc,cjQs.length,cjHist);}else renderCJ();}
+function resetCJ(){$('cj-quiz').style.display='none';$('cj-res').style.display='none';$('cj-menu').style.display='block';}
+$('cj-inp').addEventListener('keydown',function(e){if(e.key==='Enter')checkCJ();});
+
+// ================================================================
+// MÉLANGÉ
+// ================================================================
+var mxQs=[],mxIdx=0,mxSc=0,mxAns=false,mxHist=[];
+var selMX=0;
+buildGrid('mx-grid',MX_SECTIONS,function(i){selMX=i;});
+
+function startMX(){
+  var pres=CJ_SECTIONS.filter(function(s){return ['p1','p2','p3'].includes(s.key);}).flatMap(function(s){return s.questions;});
+  var pc=CJ_SECTIONS.filter(function(s){return ['pc1','pc2','pc3'].includes(s.key);}).flatMap(function(s){return s.questions;});
+  var imp=CJ_SECTIONS.filter(function(s){return s.key==='imp1';}).flatMap(function(s){return s.questions;});
+  var fut=CJ_SECTIONS.filter(function(s){return s.key==='fut1';}).flatMap(function(s){return s.questions;});
+  var all=CJ_SECTIONS.flatMap(function(s){return s.questions;});
+  var pool=[];
+  if(selMX===0)pool=pres.concat(pc);
+  else if(selMX===1)pool=pres.concat(imp);
+  else if(selMX===2)pool=pres.concat(fut);
+  else if(selMX===3)pool=pc.concat(imp);
+  else if(selMX===4)pool=pc.concat(fut);
+  else if(selMX===5)pool=imp.concat(fut);
+  else if(selMX===6)pool=pres.concat(pc).concat(imp);
+  else if(selMX===7)pool=pres.concat(pc).concat(fut);
+  else if(selMX===8)pool=pc.concat(imp).concat(fut);
+  else pool=all;
+  mxQs=shuffle(pool).slice(0,10);
+  mxIdx=0;mxSc=0;mxAns=false;mxHist=[];
+  $('mx-menu').style.display='none';$('mx-res').style.display='none';
+  $('mx-quiz').style.display='block';renderMX();
+}
+
+function renderMX(){
+  mxAns=false;
+  var q=mxQs[mxIdx],tot=mxQs.length;
+  $('mx-ct').textContent=(mxIdx+1)+'/'+tot;
+  $('mx-sc').textContent=mxSc;
+  $('mx-pb').style.width=Math.round((mxIdx/tot)*100)+'%';
+  $('mx-vb').textContent=q.verb;
+  var pp=$('mx-pp');if(pp)pp.style.display=q.perso?'inline-block':'none';
+  var html=q.sentence;
+  if(q.adv&&html.includes(q.adv))html=html.replace(q.adv,'<span class="adv">'+q.adv+'</span>');
+  html=html.replace(/\(([^)]+)\)/,'(<span class="vinf">$1</span>)');
+  $('mx-txt').innerHTML=html;
+  var inp=$('mx-inp');inp.value='';inp.className='ans-inp';inp.disabled=false;
+  $('mx-val').disabled=false;
+  $('mx-corr').classList.remove('on');$('mx-nxt').style.display='none';
+  inp.focus();
+}
+
+function checkMX(){
+  if(mxAns)return;
+  var inp=$('mx-inp'),val=inp.value.trim();
+  if(!val){inp.focus();return;}
+  mxAns=true;
+  var q=mxQs[mxIdx];
+  var ok=q.answer.split('/').map(norm).includes(norm(val));
+  if(ok)mxSc++;
+  mxHist.push({q:q.sentence,user:val,ok:ok,ans:q.answer});
+  inp.className='ans-inp '+(ok?'ok':'no');inp.disabled=true;$('mx-val').disabled=true;
+  var ch=$('mx-ch');ch.className='corr-hd '+(ok?'ok':'no');
+  ch.innerHTML=ok?'✅ Bonne réponse !':'❌ Pas tout à fait...';
+  $('mx-ca').innerHTML=ok?'<strong>Parfait !</strong> → <strong style="color:#34d399">'+q.answer+'</strong>':'Ta réponse : <strong style="color:#fb7185">'+val+'</strong> → <strong style="color:#34d399">'+q.answer+'</strong>';
+  $('mx-cf').textContent=q.full||'';
+  $('mx-ce').textContent='📌 '+(q.expl||'');
+  $('mx-gl').innerHTML=(q.gloss||[]).map(function(g){return '<tr><td class="gfr">'+g.fr+'</td><td class="gtp">'+g.type+'</td><td class="gmg">🇲🇬 '+g.mg+'</td></tr>';}).join('');
+  $('mx-corr').classList.add('on');$('mx-sc').textContent=mxSc;
+  var nb=$('mx-nxt');nb.style.display='block';
+  nb.textContent=mxIdx<mxQs.length-1?'Suivant →':'Voir les résultats';
+}
+
+function nextMX(){mxIdx++;if(mxIdx>=mxQs.length){$('mx-quiz').style.display='none';$('mx-res').style.display='block';showResults('mx',mxSc,mxQs.length,mxHist);}else renderMX();}
+function resetMX(){$('mx-quiz').style.display='none';$('mx-res').style.display='none';$('mx-menu').style.display='block';}
+$('mx-inp').addEventListener('keydown',function(e){if(e.key==='Enter')checkMX();});
+
+// ================================================================
+// VOCABULAIRE
+// ================================================================
+var vcQs=[],vcIdx=0,vcSc=0,vcAns=false,vcHist=[],vcDir='fr-mg';
+var selVC=0;
+
+var VC_CATS=[
+  {key:'gr1',name:'Verbes 1er groupe',icon:'1️⃣',label:'Verbes 1er groupe (-ER)',sections:VC_SECTIONS.filter(function(s){return ['v1a','v1b','v1c'].includes(s.key);})},
+  {key:'gr2',name:'Verbes 2ème groupe',icon:'2️⃣',label:'Verbes 2ème groupe (-IR)',sections:VC_SECTIONS.filter(function(s){return ['v2a','v2b'].includes(s.key);})},
+  {key:'gr3',name:'Verbes 3ème groupe',icon:'3️⃣',label:'Verbes 3ème groupe (irréguliers)',sections:VC_SECTIONS.filter(function(s){return ['v3a','v3b','v3c'].includes(s.key);})},
+  {key:'pron',name:'Verbes pronominaux',icon:'🔄',label:'Verbes pronominaux',sections:VC_SECTIONS.filter(function(s){return s.key==='vpron';})},
+  {key:'adv',name:'Adverbes',icon:'⏰',label:'Adverbes',sections:VC_SECTIONS.filter(function(s){return ['adv1','adv2','adv3','adv4','adv5','adv6'].includes(s.key);})},
+  {key:'adj',name:'Adjectifs',icon:'⭐',label:'Adjectifs',sections:VC_SECTIONS.filter(function(s){return ['adj1','adj2','adj3','adj4','adj5','adj6'].includes(s.key);})},
+];
+
+function buildVCCatGrid(){
+  var g=$('vc-cat-grid');if(!g)return;g.innerHTML='';
+  VC_CATS.forEach(function(cat,i){
+    var d=document.createElement('div');
+    d.className='sec-card'+(i===0?' sel':'');
+    var total=cat.sections.reduce(function(acc,s){return acc+s.words.length;},0);
+    d.innerHTML='<div class="sc-icon">'+cat.icon+'</div><div class="sc-name">'+cat.name+'</div><div class="sc-count">'+total+' mots</div>';
+    d.onclick=function(){g.querySelectorAll('.sec-card').forEach(function(c){c.classList.remove('sel');});d.classList.add('sel');buildVCSubGrid(cat);};
+    g.appendChild(d);
+  });
+  buildVCSubGrid(VC_CATS[0]);
+}
+
+function buildVCSubGrid(cat){
+  var labelEl=$('vc-sub-label');if(labelEl)labelEl.textContent=cat.label+' :';
+  var g=$('vc-sub-grid');if(!g)return;g.innerHTML='';
+  cat.sections.forEach(function(sec,i){
+    var d=document.createElement('div');
+    d.className='sec-card'+(i===0?' sel':'');
+    d.innerHTML='<div class="sc-icon">'+sec.icon+'</div><div class="sc-name">'+sec.name+'</div><div class="sc-count">'+sec.words.length+' mots</div>';
+    d.onclick=function(){g.querySelectorAll('.sec-card').forEach(function(c){c.classList.remove('sel');});d.classList.add('sel');selVC=VC_SECTIONS.indexOf(sec);};
+    g.appendChild(d);
+    if(i===0)selVC=VC_SECTIONS.indexOf(sec);
+  });
+  var subMenu=$('vc-sub-menu');if(subMenu)subMenu.style.display='block';
+}
+
+buildVCCatGrid();
+
+function setDir(d){
+  vcDir=d;
+  $('dir-fr').classList.toggle('on',d==='fr-mg');
+  $('dir-mg').classList.toggle('on',d==='mg-fr');
+}
+
+function startVC(){
+  vcQs=shuffle(VC_SECTIONS[selVC].words).slice(0,10);
+  vcIdx=0;vcSc=0;vcAns=false;vcHist=[];
+  $('vc-menu').style.display='none';$('vc-res').style.display='none';
+  $('vc-quiz').style.display='block';renderVC();
+}
+
+function renderVC(){
+  vcAns=false;
+  var q=vcQs[vcIdx],tot=vcQs.length;
+  $('vc-ct').textContent=(vcIdx+1)+'/'+tot;
+  $('vc-sc').textContent=vcSc;
+  $('vc-pb').style.width=Math.round((vcIdx/tot)*100)+'%';
+  $('vc-bdg').textContent=q.type;
+  $('vc-hint').textContent=vcDir==='fr-mg'?'🇲🇬 Donne la traduction en Malagasy :':'🇫🇷 Donne la traduction en Français :';
+  $('vc-word').textContent=vcDir==='fr-mg'?q.fr:q.mg.split('/')[0].trim();
+  $('vc-corr').classList.remove('on');$('vc-nxt').style.display='none';
+  var correct=vcDir==='fr-mg'?q.mg:q.fr;
+  var pool=vcQs.filter(function(_,i){return i!==vcIdx;}).map(function(x){return vcDir==='fr-mg'?x.mg.split('/')[0].trim():x.fr;});
+  var opts=shuffle([correct.split('/')[0].trim()].concat(shuffle(pool).slice(0,3)));
+  var div=$('vc-opts');div.innerHTML='';
+  opts.forEach(function(o){
+    var btn=document.createElement('button');btn.className='opt';btn.textContent=o;
+    btn.onclick=function(){checkVC(btn,o,q,correct);};
+    div.appendChild(btn);
+  });
+}
+
+function checkVC(btn,sel,q,correct){
+  if(vcAns)return;vcAns=true;
+  var ok=correct.split('/').map(norm).some(function(a){return norm(sel)===a||norm(sel).includes(a)||a.includes(norm(sel));});
+  if(ok)vcSc++;
+  vcHist.push({q:vcDir==='fr-mg'?q.fr:q.mg,user:sel,ok:ok,ans:correct});
+  document.querySelectorAll('#vc-opts .opt').forEach(function(b){
+    b.disabled=true;
+    var bOk=correct.split('/').map(norm).some(function(a){return norm(b.textContent)===a||norm(b.textContent).includes(a)||a.includes(norm(b.textContent));});
+    if(bOk)b.classList.add('ok');else if(b===btn&&!ok)b.classList.add('no');
+  });
+  var ch=$('vc-ch');ch.className='corr-hd '+(ok?'ok':'no');
+  ch.innerHTML=ok?'✅ Correct !':'❌ Pas tout à fait...';
+  $('vc-ca').innerHTML=ok?'<strong>Bravo !</strong> <span style="color:#34d399">'+q.fr+'</span> = <span style="color:var(--purple)">'+q.mg+'</span>':'🇫🇷 <strong>'+q.fr+'</strong> = 🇲🇬 <strong style="color:var(--purple)">'+q.mg+'</strong>';
+  $('vc-gl').innerHTML='<tr><td class="gfr">'+q.fr+'</td><td class="gtp">'+q.type+'</td><td class="gmg">🇲🇬 '+q.mg+'</td></tr>';
+  $('vc-corr').classList.add('on');$('vc-sc').textContent=vcSc;
+  var nb=$('vc-nxt');nb.style.display='block';
+  nb.textContent=vcIdx<vcQs.length-1?'Suivant →':'Voir les résultats';
+}
+
+function nextVC(){vcIdx++;if(vcIdx>=vcQs.length){$('vc-quiz').style.display='none';$('vc-res').style.display='block';showResults('vc',vcSc,vcQs.length,vcHist);}else renderVC();}
+function resetVC(){$('vc-quiz').style.display='none';$('vc-res').style.display='none';$('vc-menu').style.display='block';}
+
+// ================================================================
+// GRAMMAIRE (Articles + Futur proche + Négation)
+// ================================================================
+var GM_SECTIONS=[
+  {key:'art1',name:'Articles définis',sub:'le, la, les, l\'',icon:'📌',questions:ARTICLES_SECTIONS[0].questions,badge:'bdg-art',badgeLabel:'Articles définis'},
+  {key:'art2',name:'Articles indéfinis',sub:'un, une, des, du',icon:'📎',questions:ARTICLES_SECTIONS[1].questions,badge:'bdg-art',badgeLabel:'Articles indéfinis'},
+  {key:'fp1',name:'Futur proche',sub:'aller + infinitif',icon:'⚡',questions:FUTUR_PROCHE_SECTIONS[0].questions,badge:'bdg-fp',badgeLabel:'Futur proche'},
+  {key:'neg1',name:'Négation ne...pas',sub:'Négation simple',icon:'❌',questions:NEGATION_SECTIONS[0].questions,badge:'bdg-neg',badgeLabel:'Ne...pas'},
+  {key:'neg2',name:'Négation avancée',sub:'Ne...plus / Ne...jamais',icon:'🚫',questions:NEGATION_SECTIONS[1].questions,badge:'bdg-neg',badgeLabel:'Ne...plus / Ne...jamais'},
+];
+
+var gmQs=[],gmIdx=0,gmSc=0,gmAns=false,gmHist=[];
+var selGM=0;
+buildGrid('gm-grid',GM_SECTIONS,function(i){selGM=i;});
+
+function startGM(){
+  gmQs=shuffle(GM_SECTIONS[selGM].questions);
+  gmIdx=0;gmSc=0;gmAns=false;gmHist=[];
+  $('gm-menu').style.display='none';$('gm-res').style.display='none';
+  $('gm-quiz').style.display='block';renderGM();
+}
+
+function renderGM(){
+  gmAns=false;
+  var q=gmQs[gmIdx],tot=gmQs.length;
+  var sec=GM_SECTIONS[selGM];
+  $('gm-ct').textContent=(gmIdx+1)+'/'+tot;
+  $('gm-sc').textContent=gmSc;
+  $('gm-pb').style.width=Math.round((gmIdx/tot)*100)+'%';
+  var tb=$('gm-tb');tb.className='bdg '+sec.badge;tb.textContent=sec.badgeLabel;
+  $('gm-txt').textContent=q.sentence;
+  $('gm-corr').classList.remove('on');$('gm-nxt').style.display='none';
+  var opts=shuffle(q.opts||[]);
+  var div=$('gm-opts');div.innerHTML='';
+  opts.forEach(function(opt){
+    var btn=document.createElement('button');btn.className='opt';btn.textContent=opt;
+    btn.onclick=function(){checkGM(btn,opt,q);};
+    div.appendChild(btn);
+  });
+}
+
+function checkGM(btn,sel,q){
+  if(gmAns)return;gmAns=true;
+  var ok=norm(sel)===norm(q.answer);
+  if(ok)gmSc++;
+  gmHist.push({q:q.sentence,user:sel,ok:ok,ans:q.answer});
+  document.querySelectorAll('#gm-opts .opt').forEach(function(b){
+    b.disabled=true;
+    if(norm(b.textContent)===norm(q.answer))b.classList.add('ok');
+    else if(b===btn&&!ok)b.classList.add('no');
+  });
+  var ch=$('gm-ch');ch.className='corr-hd '+(ok?'ok':'no');
+  ch.innerHTML=ok?'✅ Bonne réponse !':'❌ Pas tout à fait...';
+  $('gm-ca').innerHTML=ok?'<strong>Parfait !</strong> → <strong style="color:#34d399">'+q.answer+'</strong>':'Ta réponse : <strong style="color:#fb7185">'+sel+'</strong> → <strong style="color:#34d399">'+q.answer+'</strong>';
+  $('gm-ce').textContent='📌 '+(q.expl||'');
+  $('gm-gl').innerHTML=(q.gloss||[]).map(function(g){return '<tr><td class="gfr">'+g.fr+'</td><td class="gtp">'+g.type+'</td><td class="gmg">🇲🇬 '+g.mg+'</td></tr>';}).join('');
+  $('gm-corr').classList.add('on');$('gm-sc').textContent=gmSc;
+  var nb=$('gm-nxt');nb.style.display='block';
+  nb.textContent=gmIdx<gmQs.length-1?'Suivant →':'Voir les résultats';
+}
+
+function nextGM(){gmIdx++;if(gmIdx>=gmQs.length){$('gm-quiz').style.display='none';$('gm-res').style.display='block';showResults('gm',gmSc,gmQs.length,gmHist);}else renderGM();}
+function resetGM(){$('gm-quiz').style.display='none';$('gm-res').style.display='none';$('gm-menu').style.display='block';}
+
+// ================================================================
+// TEXTES
+// ================================================================
+var TX_CATS=[
+  {key:'present',name:'Présent',icon:'☀️',label:'Textes au Présent'},
+  {key:'pc',name:'Présent + Passé composé',icon:'📅',label:'Textes Présent + Passé composé'},
+  {key:'imparfait',name:'Imparfait',icon:'🌅',label:'Textes à l\'Imparfait'},
+  {key:'difficile',name:'Très difficile',icon:'🏆',label:'Textes très difficiles'},
+];
+var selTX=0;
+
+function buildTXCatGrid(){
+  var g=$('tx-cat-grid');if(!g)return;g.innerHTML='';
+  TX_CATS.forEach(function(cat,i){
+    var textes=TEXTES.filter(function(t){return t.cat===cat.key;});
+    var d=document.createElement('div');
+    d.className='sec-card'+(i===0?' sel':'');
+    d.innerHTML='<div class="sc-icon">'+cat.icon+'</div><div class="sc-name">'+cat.name+'</div><div class="sc-count">'+textes.length+' texte'+(textes.length>1?'s':'')+'</div>';
+    d.onclick=function(){$('tx-cat-grid').querySelectorAll('.sec-card').forEach(function(c){c.classList.remove('sel');});d.classList.add('sel');buildTXSubGrid(cat);};
+    g.appendChild(d);
+  });
+  buildTXSubGrid(TX_CATS[0]);
+}
+
+function buildTXSubGrid(cat){
+  var textes=TEXTES.filter(function(t){return t.cat===cat.key;});
+  var labelEl=$('tx-sub-label');if(labelEl)labelEl.textContent=cat.label+' :';
+  var g=$('tx-sub-grid');if(!g)return;g.innerHTML='';
+  textes.forEach(function(tx,i){
+    var d=document.createElement('div');
+    d.className='sec-card'+(i===0?' sel':'');
+    d.innerHTML='<div class="sc-icon">'+tx.icon+'</div><div class="sc-name">'+tx.name+'</div><div class="sc-count">'+tx.sub+'</div>';
+    d.onclick=function(){g.querySelectorAll('.sec-card').forEach(function(c){c.classList.remove('sel');});d.classList.add('sel');selTX=TEXTES.indexOf(tx);};
+    g.appendChild(d);
+    if(i===0)selTX=TEXTES.indexOf(tx);
+  });
+  var subMenu=$('tx-sub-menu');if(subMenu)subMenu.style.display='block';
+}
+
+buildTXCatGrid();
+
+var txChecked=false;
+function startTX(){
+  var t=TEXTES[selTX];
+  $('tx-menu').style.display='none';$('tx-quiz').style.display='block';
+  txChecked=false;$('tx-chk').disabled=false;$('tx-res').className='txt-res';
+  $('tx-nxt').style.display='none';$('tx-intro').textContent=t.intro;
+  var html='';
+  t.blanks.forEach(function(b,i){
+    html+=b.b+' <input class="blank-inp" id="bl-'+i+'" data-ans="'+b.ans+'" placeholder="'+b.inf+'" autocomplete="off" spellcheck="false"> <span class="vinf-hint">('+b.inf+')</span> '+b.a+' ';
+  });
+  $('tx-body').innerHTML=html;
+}
+
+function checkTX(){
+  if(txChecked)return;txChecked=true;$('tx-chk').disabled=true;
+  var t=TEXTES[selTX];var ok=0;var lines=[];
+  t.blanks.forEach(function(b,i){
+    var inp=$('bl-'+i),val=inp.value.trim();
+    var good=norm(val)===norm(b.ans)||b.ans.split('/').map(norm).includes(norm(val));
+    if(good)ok++;inp.className='blank-inp '+(good?'ok':'no');inp.disabled=true;
+    lines.push('<div class="cl">'+( i+1)+'. ('+b.inf+') → '+(good?'<span class="ri">✅ '+b.ans+'</span>':'<span class="wr">✗ '+(val||'—')+'</span> → <span class="ri">✅ '+b.ans+'</span>')+'</div>');
+  });
+  var pct=Math.round((ok/t.blanks.length)*100);
+  var res=$('tx-res');res.className='txt-res on '+(pct===100?'ok':'mix');
+  res.innerHTML='<strong>'+ok+'/'+t.blanks.length+' correct'+(ok>1?'s':'')+'</strong> — '+(pct===100?'🎉 Parfait Brave !':pct>=50?'👍 Bien !':'💪 Relis le texte !')+'<br><br>'+lines.join('');
+  $('tx-nxt').style.display='block';
+  addGlobalScore(ok*5);
+}
+
+function resetTX(){$('tx-quiz').style.display='none';$('tx-menu').style.display='block';}
+
+// ================================================================
+// MICRO 🎤
+// ================================================================
+var recog=null,isLst=false;
+function startMic(){
+  var mb=$('cj-mic'),ms=$('cj-mst'),inp=$('cj-inp');
+  if(!mb)return;
+  if(isLst){if(recog)recog.stop();return;}
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ms.textContent='❌ Utilise Google Chrome !';ms.className='mic-st err';return;}
+  recog=new SR();recog.lang='fr-FR';recog.continuous=false;recog.interimResults=false;
+  isLst=true;mb.classList.add('lst');mb.textContent='⏹';
+  ms.textContent="🎤 Je t'écoute...";ms.className='mic-st act';
+  recog.onresult=function(e){var t=e.results[0][0].transcript;inp.value=t;ms.textContent='✅ Entendu : « '+t+' »';ms.className='mic-st';stopMic();};
+  recog.onerror=function(e){var m='❌ Erreur micro.';if(e.error==='not-allowed')m='❌ Autorise le micro dans Chrome !';if(e.error==='no-speech')m='🔇 Rien entendu.';ms.textContent=m;ms.className='mic-st err';stopMic();};
+  recog.onend=function(){stopMic();};
+  try{recog.start();}catch(e){ms.textContent='❌ Erreur.';ms.className='mic-st err';stopMic();}
+}
+function stopMic(){isLst=false;var mb=$('cj-mic');if(mb){mb.classList.remove('lst');mb.textContent='🎤';}if(recog){try{recog.stop();}catch(e){}recog=null;}}
+
+</script>
+
+</body>
+</html>
